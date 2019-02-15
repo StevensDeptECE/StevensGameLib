@@ -1,0 +1,2 @@
+dbkbd: dbkbd.cc
+	g++ -g dbkbd.cc -o dbkbd
