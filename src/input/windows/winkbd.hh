@@ -99,6 +99,8 @@ public:
 	}
 	unsigned short read_device(int n)
 	{
+		if (n >= vkey_current.size())
+			return 65535;
 		return vkey_current[n];
 	}
 	
@@ -113,6 +115,11 @@ public:
 			if (keyboards[i].fh == handle)
 				vkey_current[i] = vkey;
 		}			
+	}
+	
+	int keyboard_count()
+	{
+		return keyboards.size();
 	}
 	
 	friend ostream& operator <<(ostream& s, const Inputs& inp)
@@ -143,10 +150,11 @@ void process_keyboard_input(HWND hwnd, LPARAM lParam)
 	// May want to have an array with every key, and
 	// API call is getKeyState('A') for example
 	if (input->header.dwType == RIM_TYPEKEYBOARD) {
-		if (!input->data.keyboard.Flags) {
+		if (input->data.keyboard.Message == WM_KEYUP) {
+			Inputs::set_key(input->header.hDevice, -1); 
+		}
+		else if (input->data.keyboard.Message == WM_KEYDOWN) {
 			Inputs::set_key(input->header.hDevice, input->data.keyboard.VKey);
-		} else if (input->data.keyboard.Flags == 1) {
-			Inputs::set_key(input->header.hDevice, -1);
 		}
 	}
 	
@@ -238,11 +246,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		process_keyboard_input(hwnd, lParam);
 		break;
 	case WM_PAINT:
-
 		hdc = BeginPaint(hwnd, &ps);
 		EndPaint(hwnd, &ps);
 		break;
-
 	case WM_CREATE:
 		break;
 	case WM_DESTROY:
