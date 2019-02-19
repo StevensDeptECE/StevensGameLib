@@ -1,1 +1,2 @@
 HINSTANCE - https://mail.haskell.org/pipermail/glasgow-haskell-users/2001-April/001827.html
+Redrawing - https://stackoverflow.com/questions/47144021/winapi-drawing-in-every-frame
