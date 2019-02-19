@@ -7,9 +7,9 @@
 
 #include "winkbd.hh"
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int NCmdShow)
+int main()
 {
-	Inputs i(hInstance, hPrevInstance, lpCmdLine, NCmdShow);
+	Inputs i;
 	
 	unsigned short vkey = 0;
 	while(1) {

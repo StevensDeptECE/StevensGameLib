@@ -19,16 +19,9 @@
 
 using namespace std;
 
-struct mainInfo
-{
-	HINSTANCE h;
-	HINSTANCE p;
-	LPSTR l;
-	int n;
-};
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-void create_event_window(void *data);
+void create_event_window(void *);
 
 class Inputs 
 {
@@ -41,7 +34,7 @@ private:
 		
 		Keyboard(const HANDLE fh) : fh(fh)
 		{
-			printf("Added keyboard: %p\n", fh);
+			cout << "Added keyboard: " << fh << endl;
 		}
 	};
 
@@ -70,43 +63,39 @@ private:
 		PRAWINPUTDEVICELIST pRawInputDeviceList;
 		
 		// Check # of devices
-		if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0)
+		if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) {
 			printf("Error: GetRawInputDeviceList()\n");
+		}
 		
 		// Allocate memory for pointer
-		if ((pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(sizeof(RAWINPUTDEVICELIST) * nDevices)) == NULL)
+		if ((pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(sizeof(RAWINPUTDEVICELIST) * nDevices)) == NULL) {
 			printf("Error: pRawInputDeviceList malloc()\n");
+		}
 		
 		// Get structures
-		if (GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == (-1))
+		if (GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == (-1)) {
 			printf("Error: GetRawInputDeviceList()\n");
+		}
 		
 		
 		cout << "Number of devices: " << nDevices << endl;
 		for (int i = 0; i < nDevices; ++i) {
 			// print the device ids
-			fflush(stdout);
 			if ((pRawInputDeviceList+i)->dwType == RIM_TYPEKEYBOARD) {
 				Inputs::keyboards.push_back(Keyboard((pRawInputDeviceList+i)->hDevice));
 				vkey_current.push_back(-1);
-				fflush(stdout);
 			}
 		}
 		free(pRawInputDeviceList);
 	}
 	
 public:
-	Inputs(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int NCmdShow)
+	Inputs()
 	{
 		getDevices();
 		// create hidden window to handle events,
 		// non-blocking
-		mainInfo *info = new mainInfo;
-		info->h = hInstance;
-		info->p = hPrevInstance;
-		info->l = lpCmdLine;
-		info->n = NCmdShow;
-		_beginthread(create_event_window, 0, info);
+		_beginthread(create_event_window, 0, NULL);
 	}
 	unsigned short read_device(int n)
 	{
@@ -196,14 +185,9 @@ void process_keyboard_input(HWND hwnd, LPARAM lParam)
 }
 
 
-void create_event_window(void *data)
+void create_event_window(void *)
 {
-	struct mainInfo *info = (struct mainInfo *)data;
-	
-	HINSTANCE hInstance = info->h;
-	HINSTANCE hPrevInstance = info->p;
-	LPSTR lpCmdLine = info->l;
-	int NCmdShow = info->n;
+	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
 	
 	DWORD dwWidth = GetSystemMetrics(SM_CXSCREEN) / 4;
 	DWORD dwHeight = GetSystemMetrics(SM_CYSCREEN) / 4;
@@ -238,8 +222,6 @@ void create_event_window(void *data)
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	
-	delete info;
 	
 	return (void) msg.wParam;
 }
