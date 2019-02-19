@@ -38,21 +38,21 @@ private:
 
 	void getDevices()
 	{
-    	FILE *grep_devices_p = popen(command, "r");
-			char keyboardNameBuf[16];
-			const string prefix = "/dev/input/";
-			for (int i = 0; NULL != (fgets(keyboardNameBuf, 9, grep_devices_p)) && i < 10; ++i) {
-				try {
-					int j;
-					for (j = 0; keyboardNameBuf[j] != '\n'; j++)
-						;
-					keyboardNameBuf[j] = '\0'; // remove the newline at the end
-					keyboards.push_back(Keyboard(prefix + keyboardNameBuf));
-				} catch (const char* msg) {
-					cerr << msg << '\n';
-				}
+		FILE *grep_devices_p = popen(command, "r");
+		char keyboardNameBuf[16];
+		const string prefix = "/dev/input/";
+		for (int i = 0; NULL != (fgets(keyboardNameBuf, 9, grep_devices_p)) && i < 10; ++i) {
+			try {
+				int j;
+				for (j = 0; keyboardNameBuf[j] != '\n'; j++)
+					;
+				keyboardNameBuf[j] = '\0'; // remove the newline at the end
+				keyboards.push_back(Keyboard(prefix + keyboardNameBuf));
+			} catch (const char* msg) {
+				cerr << msg << '\n';
 			}
-			pclose(grep_devices_p);
+		}
+		pclose(grep_devices_p);
 	}
 public:
 	Inputs()
