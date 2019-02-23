@@ -42,6 +42,8 @@ private:
 	static vector<Keyboard> keyboards;
 	static vector<unsigned short> vkey_current;
 	
+	static bool control_keys[3];
+	
 	void getDevices()
 	{
 		/*
@@ -93,6 +95,9 @@ public:
 	Inputs()
 	{
 		getDevices();
+		for (int i = 0; i < sizeof(control_keys); ++i) {
+			control_keys[i] = FALSE;
+		}
 		// create hidden window to handle events,
 		// non-blocking
 		_beginthread(create_event_window, 0, NULL);
@@ -104,16 +109,33 @@ public:
 		return vkey_current[n];
 	}
 	
-	unsigned char get_key(int n)
+	string get_key_string(int n, unsigned char c)
 	{
-		// TODO: resolve vkey to char
+		string s = "";
+		if (n >= vkey_current.size())
+			return "Error";
+		s += control_keys[0] ? "shift+" : "";
+		s += control_keys[1] ? "ctrl+" : "";
+		s += control_keys[2] ? "alt+" : "";
+		
+		s += vkey_current[n];
+		
+		return s;
+		
 	}
 	
-	static void set_key(HANDLE handle, unsigned short vkey)
+	static void set_key(HANDLE handle, unsigned short vkey, bool is_down)
 	{
 		for (int i = 0; i < keyboards.size(); ++i) {
-			if (keyboards[i].fh == handle)
-				vkey_current[i] = vkey;
+			if (keyboards[i].fh == handle) {
+				if (vkey >= VK_SHIFT && vkey <= VK_MENU) {
+					// 10 = shift, 11 = ctrl, 12 = alt
+					control_keys[vkey - VK_SHIFT] = is_down;
+					cout << "Control key" << endl;
+				} else {
+					vkey_current[i] = is_down ? vkey : 65535;
+				}
+			}
 		}			
 	}
 	
@@ -132,6 +154,7 @@ public:
 };
 vector<Inputs::Keyboard> Inputs::keyboards;
 vector<unsigned short> Inputs::vkey_current;
+bool Inputs::control_keys[3];
 
 
 
@@ -151,10 +174,10 @@ void process_keyboard_input(HWND hwnd, LPARAM lParam)
 	// API call is getKeyState('A') for example
 	if (input->header.dwType == RIM_TYPEKEYBOARD) {
 		if (input->data.keyboard.Message == WM_KEYUP) {
-			Inputs::set_key(input->header.hDevice, -1); 
+			Inputs::set_key(input->header.hDevice, input->data.keyboard.VKey, FALSE); 
 		}
 		else if (input->data.keyboard.Message == WM_KEYDOWN) {
-			Inputs::set_key(input->header.hDevice, input->data.keyboard.VKey);
+			Inputs::set_key(input->header.hDevice, input->data.keyboard.VKey, TRUE);
 		}
 	}
 	
