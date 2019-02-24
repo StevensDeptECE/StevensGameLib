@@ -26,6 +26,9 @@ void create_event_window(void *);
 class Inputs 
 {
 private:
+	static vector<Keyboard> keyboards;
+	static vector<VKey_Array> keys;
+	
 	struct Keyboard 
 	{
 		HANDLE fh;
@@ -37,12 +40,12 @@ private:
 			cout << "Added keyboard: " << fh << endl;
 		}
 	};
-
-		
-	static vector<Keyboard> keyboards;
-	static vector<unsigned short> vkey_current;
 	
-	static bool control_keys[3];
+	struct VKey_Array
+	{
+		bool keys[256] = {0};
+		VKey_Array() {}
+	};
 	
 	void getDevices()
 	{
@@ -68,24 +71,21 @@ private:
 		if (GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) {
 			printf("Error: GetRawInputDeviceList()\n");
 		}
-		
 		// Allocate memory for pointer
 		if ((pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(sizeof(RAWINPUTDEVICELIST) * nDevices)) == NULL) {
 			printf("Error: pRawInputDeviceList malloc()\n");
 		}
-		
 		// Get structures
 		if (GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)) == (-1)) {
 			printf("Error: GetRawInputDeviceList()\n");
 		}
-		
 		
 		cout << "Number of devices: " << nDevices << endl;
 		for (int i = 0; i < nDevices; ++i) {
 			// print the device ids
 			if ((pRawInputDeviceList+i)->dwType == RIM_TYPEKEYBOARD) {
 				Inputs::keyboards.push_back(Keyboard((pRawInputDeviceList+i)->hDevice));
-				vkey_current.push_back(-1);
+				keys.push_back(VKey_Array());
 			}
 		}
 		free(pRawInputDeviceList);
@@ -95,46 +95,21 @@ public:
 	Inputs()
 	{
 		getDevices();
-		for (int i = 0; i < sizeof(control_keys); ++i) {
-			control_keys[i] = FALSE;
-		}
 		// create hidden window to handle events,
 		// non-blocking
 		_beginthread(create_event_window, 0, NULL);
 	}
-	unsigned short read_device(int n)
-	{
-		if (n >= vkey_current.size())
-			return 65535;
-		return vkey_current[n];
-	}
 	
-	string get_key_string(int n, unsigned char c)
+	static bool is_down(int n, unsigned short vkey)
 	{
-		string s = "";
-		if (n >= vkey_current.size())
-			return "Error";
-		s += control_keys[0] ? "shift+" : "";
-		s += control_keys[1] ? "ctrl+" : "";
-		s += control_keys[2] ? "alt+" : "";
-		
-		s += vkey_current[n];
-		
-		return s;
-		
+		return keys[n].keys[vkey];
 	}
 	
 	static void set_key(HANDLE handle, unsigned short vkey, bool is_down)
 	{
 		for (int i = 0; i < keyboards.size(); ++i) {
 			if (keyboards[i].fh == handle) {
-				if (vkey >= VK_SHIFT && vkey <= VK_MENU) {
-					// 10 = shift, 11 = ctrl, 12 = alt
-					control_keys[vkey - VK_SHIFT] = is_down;
-					cout << "Control key" << endl;
-				} else {
-					vkey_current[i] = is_down ? vkey : 65535;
-				}
+					keys[i].keys[vkey] = is_down;
 			}
 		}			
 	}
@@ -153,8 +128,7 @@ public:
 	}
 };
 vector<Inputs::Keyboard> Inputs::keyboards;
-vector<unsigned short> Inputs::vkey_current;
-bool Inputs::control_keys[3];
+vector<Inputs::VKey_Array> Inputs::keys;
 
 
 
@@ -168,10 +142,7 @@ void process_keyboard_input(HWND hwnd, LPARAM lParam)
 	
 	RAWINPUT *input = (RAWINPUT *)malloc(dwSize);
 	GetRawInputData((HRAWINPUT)lParam, RID_INPUT, input, &dwSize, sizeof(RAWINPUTHEADER));
-	
-	// If key_up then set key to -1 (may want to change keystate handling)
-	// May want to have an array with every key, and
-	// API call is getKeyState('A') for example
+
 	if (input->header.dwType == RIM_TYPEKEYBOARD) {
 		if (input->data.keyboard.Message == WM_KEYUP) {
 			Inputs::set_key(input->header.hDevice, input->data.keyboard.VKey, FALSE); 
@@ -267,12 +238,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch(msg) {
 	case WM_INPUT:
 		process_keyboard_input(hwnd, lParam);
-		break;
-	case WM_PAINT:
-		hdc = BeginPaint(hwnd, &ps);
-		EndPaint(hwnd, &ps);
-		break;
-	case WM_CREATE:
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);

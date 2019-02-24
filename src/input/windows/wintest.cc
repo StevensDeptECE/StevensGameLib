@@ -55,22 +55,24 @@ int main()
 		head = rectangles;
 		while (head) {
 			unsigned short vkey = 0;
-			if ((vkey = i.read_device(head->id)) != 65535) {
-				head->offsetX += vkey == VK_LEFT ? -1 : vkey == VK_RIGHT ? 1 : 0;
-				head->offsetY += vkey == VK_UP ? -1 : vkey == VK_DOWN ? 1 : 0;
-				
-				head->r.left = head->offsetX;
-				head->r.top = head->offsetY;
-				head->r.right = head->offsetX + 50;
-				head->r.bottom = head->offsetY + 50;
-			}
+			if (i.is_down(head->id, VK_LEFT))
+				head->offsetX -= 1;
+			if (i.is_down(head->id, VK_RIGHT))
+				head->offsetX += 1;
+			if (i.is_down(head->id, VK_UP))
+				head->offsetY -= 1;
+			if (i.is_down(head->id, VK_DOWN))
+				head->offsetY += 1;
+			head->r.left = head->offsetX;
+			head->r.top = head->offsetY;
+			head->r.right = head->offsetX + 50;
+			head->r.bottom = head->offsetY + 50;
 			head = head->next;
 		}
 		Sleep(10);
 	}
 	return 0;
 }
-
 
 void create_test_window(void *)
 {
@@ -106,7 +108,6 @@ void create_test_window(void *)
 	}
 	return (void) msg.wParam;
 }
-
 
 void refresh_window(void *win)
 {
