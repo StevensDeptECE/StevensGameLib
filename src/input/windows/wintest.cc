@@ -36,7 +36,6 @@ int main()
 	struct tagRectangle *head = rectangles;
 	for (int j = 0; j < i.keyboard_count(); ++j) {
 		head->offsetX = rand() % (GetSystemMetrics(SM_CXSCREEN) / 2 - 50);
-		cout << head->offsetX << endl;
 		head->offsetY = rand() % (GetSystemMetrics(SM_CYSCREEN) / 2 - 50);
 		head->r.left = head->offsetX;
 		head->r.right = head->offsetX + 50;
