@@ -23,11 +23,11 @@ using namespace std;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 void create_event_window(void *);
 
+static void (*keyboard_handler)(int id, unsigned char key);
+
 class Inputs 
 {
 private:
-	static vector<Keyboard> keyboards;
-	static vector<VKey_Array> keys;
 	
 	struct Keyboard 
 	{
@@ -46,6 +46,10 @@ private:
 		bool keys[256] = {0};
 		VKey_Array() {}
 	};
+	
+	
+	static vector<Keyboard> keyboards;
+	static vector<VKey_Array> keys;
 	
 	void getDevices()
 	{
@@ -91,6 +95,25 @@ private:
 		free(pRawInputDeviceList);
 	}
 	
+	static bool is_down(int n, unsigned short vkey)
+	{
+		return keys[n].keys[vkey];
+	}
+	
+	static void poll(void *)
+	{
+		while (1) {
+			for (int i = 0; i < keyboards.size(); ++i) {
+				for (int j = 0; j < 256; ++j) {
+					if (is_down(i, j)) {
+						(*keyboard_handler)(i, j);
+					}
+				}
+			}
+			Sleep(5);
+		}
+	}
+	
 public:
 	Inputs()
 	{
@@ -100,9 +123,10 @@ public:
 		_beginthread(create_event_window, 0, NULL);
 	}
 	
-	static bool is_down(int n, unsigned short vkey)
+	static void register_handler(void (*handler)(int, unsigned char))
 	{
-		return keys[n].keys[vkey];
+		keyboard_handler = handler;
+		_beginthread(poll, 0, NULL);
 	}
 	
 	static void set_key(HANDLE handle, unsigned short vkey, bool is_down)
@@ -111,7 +135,7 @@ public:
 			if (keyboards[i].fh == handle) {
 					keys[i].keys[vkey] = is_down;
 			}
-		}			
+		}
 	}
 	
 	int keyboard_count()

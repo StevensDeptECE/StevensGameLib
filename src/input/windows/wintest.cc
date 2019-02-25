@@ -24,6 +24,7 @@ struct tagRectangle
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void refresh_window(void *win);
+void my_keyboard_handler(int id, unsigned char key);
 
 bool done = false;
 
@@ -49,26 +50,12 @@ int main()
 		head = head->next;
 	}
 	
+	//void (*fp)(int, unsigned char) = my_keyboard_handler;
+	i.register_handler(&my_keyboard_handler);
+	
 	_beginthread(create_test_window, 0, NULL);	// create game window
 	
 	while (!done) {
-		head = rectangles;
-		while (head) {
-			unsigned short vkey = 0;
-			if (i.is_down(head->id, VK_LEFT))
-				head->offsetX -= 1;
-			if (i.is_down(head->id, VK_RIGHT))
-				head->offsetX += 1;
-			if (i.is_down(head->id, VK_UP))
-				head->offsetY -= 1;
-			if (i.is_down(head->id, VK_DOWN))
-				head->offsetY += 1;
-			head->r.left = head->offsetX;
-			head->r.top = head->offsetY;
-			head->r.right = head->offsetX + 50;
-			head->r.bottom = head->offsetY + 50;
-			head = head->next;
-		}
 		Sleep(10);
 	}
 	return 0;
@@ -127,6 +114,29 @@ void refresh_window(void *win)
 		}
 		ReleaseDC(hwnd, hdc);
 		Sleep(10);
+	}
+}
+
+void my_keyboard_handler(int id, unsigned char key)
+{
+	struct tagRectangle *head = rectangles;
+	while (head) {
+		if (head->id == id) {
+			if (key == VK_LEFT)
+				head->offsetX -= 1;
+			if (key == VK_RIGHT)
+				head->offsetX += 1;
+			if (key == VK_UP)
+				head->offsetY -= 1;
+			if (key == VK_DOWN)
+				head->offsetY += 1;
+			head->r.left = head->offsetX;
+			head->r.top = head->offsetY;
+			head->r.right = head->offsetX + 50;
+			head->r.bottom = head->offsetY + 50;
+			break;
+		}
+		head = head->next;
 	}
 }
 
