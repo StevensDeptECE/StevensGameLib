@@ -1,7 +1,7 @@
 #include "dbkbd.hh"
 #include <time.h>
 #include <pthread.h>
-#include <GLFW/glfw3.h>
+#include <GL/glut.h>
 
 class Player {
 private:
@@ -45,9 +45,9 @@ void draw()
 
 void idle()
 {
-//	if (!isIdle)
-//		glutPostRedisplay();
-//	isIdle = true;
+	if (!isIdle)
+		glutPostRedisplay();
+	isIdle = true;
 	usleep(10000);
 }
 
@@ -55,18 +55,29 @@ void *my_keyboard_handler(void *);
 void drawTriangle();
 int main(int argc, char **argv)
 {
-//	srand(time(NULL));
-//	Inputs i;
-//
-//	cout << "Keyboards: " << i.keyboard_count() << endl;
-//
-//	pthread_t myThread;
-//	pthread_create(&myThread, NULL, &my_keyboard_handler, &i);
-//
-	for (int j = 0; j < 1; ++j)
+	srand(time(NULL));
+	Inputs i;
+
+	cout << "Keyboards: " << i.keyboard_count() << endl;
+
+	pthread_t myThread;
+	pthread_create(&myThread, NULL, &my_keyboard_handler, &i);
+
+	for (int j = 0; j < i.keyboard_count(); ++j)
 		players.push_back(Player(rand() % 725, rand() % 525));
 
 
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE);
+	glutInitWindowSize(800,600);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Keyboard Demo - OpenGL");
+	glutDisplayFunc(draw);
+	glutIdleFunc(idle);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0f, 800.0f, 600.0f, 0.0f, 0.0f, 1.0f);
+	glutMainLoop();
 	play = false;
 
 	return 0;
