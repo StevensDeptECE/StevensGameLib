@@ -1,7 +1,7 @@
 #include "dbkbd.hh"
 #include <time.h>
 #include <pthread.h>
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 class Player {
 private:
@@ -19,16 +19,6 @@ public:
 
 	void draw()
 	{
-		glColor3f(r, g, b);
-
-		glBegin(GL_POLYGON);
-			glVertex3f(x, y, 0);
-			glVertex3f(x+size, y, 0);
-			glVertex3f(x+size, y+size, 0);
-			glVertex3f(x, y+size, 0);
-		glEnd();
-
-		glFlush();
 	}
 };
 
