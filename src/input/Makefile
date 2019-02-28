@@ -1,5 +1,5 @@
 dbkbd: ./linux/ltest.cc glad.o
-	g++ -g -std=c++11 -I./linux/glad/include -lglfw -lGL -lX11 -ldl -pthread -fsanitize=address ./linux/ltest.cc ./linux/glad.o -o dbkbd
+	g++ -g -std=c++11 -I./linux/glad/include -pthread -fsanitize=address ./linux/ltest.cc ./linux/glad.o -o dbkbd -lglfw -lGL -lX11 -ldl 
 	rm ./linux/glad.o
 	
 windows: ./windows/wintest.cc
