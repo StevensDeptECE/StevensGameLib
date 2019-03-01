@@ -43,7 +43,7 @@ private:
 
 	struct VKey_Array
 	{
-		bool keys[256] = {0};
+		uint32_t keys[8] = {0};	// 256 keys / 32 bits/key
 		VKey_Array() {}
 	};
 
@@ -70,66 +70,34 @@ private:
 		pclose(grep_devices_p);
 	}
 
-	// Store into array of keys
-	static void process_chars(int id, unsigned short scan_code, bool down)
+	inline static void process_chars(int id, unsigned short scan_code, bool down)
 	{
-		keys[id].keys[scan_code] = down;
+		keys[id].keys[scan_code>>5] ^= 1 << (scan_code&0x1F);
 	}
 
 	// Main polling loop that calls process_chars()
 	static void *poll(void *)
 	{
-		unsigned short scan_code = 0;
 		struct input_event event;
 
-		// How do I do this in C++ with new?
-		// May just toss this anyway
-		bool *shift = (bool*)malloc(sizeof(bool) * keyboards.size());
-		bool *ctrl = (bool*)malloc(sizeof(bool) * keyboards.size());
-		if (shift == NULL || ctrl == NULL) {
-			printf("Could not allocate memory for either shift or ctrl\n");
-			exit(6);
-		}
-
-		for (int i = 0; i < keyboards.size(); ++i) {
-			shift[i] = false;
-			ctrl[i] = false;
-		}
 		int offset = 0;
+		long int size_event = sizeof(struct input_event);
 		while (1) {
-			if (read(keyboards[offset].fh, &event, sizeof(struct input_event))
-					> 0) {
-				if (event.type != EV_KEY) // always ev_key
-					continue;
-
-				scan_code = event.code;
+			if (read(keyboards[offset].fh, &event, size_event) > 0
+					&& event.code) {
 
 				// EV_MAKE = pressed
 				if (event.value == EV_MAKE) {
-					if (scan_code == KEY_LEFTSHIFT || scan_code == KEY_RIGHTSHIFT)
-						shift[offset] = true;
-					else if (scan_code == KEY_LEFTCTRL || scan_code == KEY_RIGHTCTRL)
-						ctrl[offset] = true;
-					process_chars(offset, scan_code, true); 
+					process_chars(offset, event.code, true); 
 				}
 
 				// EV_BREAK = released
 				if (event.value == EV_BREAK) {
-					if (scan_code == KEY_LEFTSHIFT || scan_code == KEY_RIGHTSHIFT)
-						shift[offset] = false;
-					else if (scan_code == KEY_LEFTCTRL || scan_code == KEY_RIGHTCTRL)
-						ctrl[offset] = false;
-					process_chars(offset, scan_code, false); 
+					process_chars(offset, event.code, false); 
 				}
-
-				// Not really necessary but w/e
-				if (event.value == EV_REPEAT)
-					process_chars(offset, scan_code, true);
-				
 			}
 			offset = (offset == keyboards.size() - 1) ? 0 : offset + 1;
 			usleep(1000); // 1000us = 1ms
-			fflush(stdout);
 		}
 	}
 
@@ -145,7 +113,7 @@ public:
 
 	bool get_key(int id, unsigned int code)
 	{
-		return keys[id].keys[code];
+		return keys[id].keys[code>>5] & 1 << (code&0x1F);
 	}
 
 	int keyboard_count()
