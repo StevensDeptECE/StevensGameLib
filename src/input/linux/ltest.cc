@@ -231,17 +231,17 @@ void *my_keyboard_handler(void *input)
 			float o_x = players[j].x;
 			float o_y = players[j].y;
 			if (i->get_key(j, 103))
-				players[j].move(0, .005);
+				players[j].move(0, .001);
 			if (i->get_key(j, 105))
-				players[j].move(-.005, 0);
+				players[j].move(-.001, 0);
 			if (i->get_key(j, 106))
-				players[j].move(.005, 0);
+				players[j].move(.001, 0);
 			if (i->get_key(j, 108))
-				players[j].move(0, -.005);
+				players[j].move(0, -.001);
 			if (o_x != players[j].x || o_y != players[j].y)
 				isIdle = false;
 		}
-		usleep(5000);	// sample at 2x framerate?
+		usleep(1000);	// sample at 2x framerate?
 	}
 	return nullptr;
 }
