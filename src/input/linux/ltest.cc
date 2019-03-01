@@ -16,56 +16,77 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "{\n"
     "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
     "}\n\0";
+const char *fragmentShader2Source = "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(0.2f, 0.5f, 1.0f, 1.0f);\n"
+    "}\n\0";
 
 
 class Player {
 private:
-	const int size = 75;
+	const int size = 125;
 	double r, g, b;
 
-	struct data
-	{
-		float vertices[12];
-		int length = 12;
-	};
 public:
 	float x, y;
-	struct data d;
+	float vertices[12] = {0};
+	int length = 12;
 	Player(float a, float b) : x(a), y(b)
 	{
 		r = (double)rand() / RAND_MAX;
 		g = (double)rand() / RAND_MAX;
 		b = (double)rand() / RAND_MAX;
+		vertices[0] = x;
+		vertices[1] = y;
+		vertices[2] = 0.0f;
+		vertices[3] = x+size/800.0;
+		vertices[4] = y;
+		vertices[5] = 0.0f;
+		vertices[6] = x+size/800.0;
+		vertices[7] = y+size/600.0;
+		vertices[8] = 0.0f;
+		vertices[9] = x;
+		vertices[10] = y+size/600.0;
+		vertices[11] = 0.0f;
+		length = 12;
 	}
 
-	void draw()
+	void move(float x, float y)
 	{
-		d.vertices[0] = x;
-		d.vertices[1] = y;
-		d.vertices[2] = 0.0f;
-		d.vertices[3] = x+size;
-		d.vertices[4] = y;
-		d.vertices[5] = 0.0f;
-		d.vertices[6] = x+size;
-		d.vertices[7] = y+size;
-		d.vertices[8] = 0.0f;
-		d.vertices[9] = x;
-		d.vertices[10] = y+size;
-		d.vertices[11] = 0.0f;
-		d.length = 12;
+		this->x += x;
+		this->y += y;
+		update();
+	}
+
+	void update()
+	{
+		vertices[0] = x;
+		vertices[1] = y;
+		vertices[2] = 0.0f;
+		vertices[3] = x+size/800.0;
+		vertices[4] = y;
+		vertices[5] = 0.0f;
+		vertices[6] = x+size/800.0;
+		vertices[7] = y+size/600.0;
+		vertices[8] = 0.0f;
+		vertices[9] = x;
+		vertices[10] = y+size/600.0;
+		vertices[11] = 0.0f;
 	}
 };
 
 vector<Player> players;
 bool isIdle = true;
 bool play = true;
-void draw()
-{
-	glClearColor(0.4, 0.4, 0.4, 0.4);
-	glClear(GL_COLOR_BUFFER_BIT);
-	for (int i = 0; i < players.size(); ++i)
-		players[i].draw();
-}
+//void draw()
+//{
+//	glClearColor(0.4, 0.4, 0.4, 0.4);
+//	glClear(GL_COLOR_BUFFER_BIT);
+//	for (int i = 0; i < players.size(); ++i)
+//		players[i].draw();
+//}
 
 void idle()
 {
@@ -80,16 +101,16 @@ void drawTriangle();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 int main(int argc, char **argv)
 {
-//	srand(time(NULL));
-//	Inputs i;
-//
-//	cout << "Keyboards: " << i.keyboard_count() << endl;
-//
-//	pthread_t myThread;
-//	pthread_create(&myThread, NULL, &my_keyboard_handler, &i);
-//
-	for (int j = 0; j < 1; ++j)
-		players.push_back(Player(rand() % 725, rand() % 525));
+	srand(time(NULL));
+	Inputs i;
+
+	cout << "Keyboards: " << i.keyboard_count() << endl;
+
+	pthread_t myThread;
+	pthread_create(&myThread, NULL, &my_keyboard_handler, &i);
+
+	for (int j = 0; j < i.keyboard_count(); ++j)
+		players.push_back(Player((double)rand() / RAND_MAX - .1, (double)rand() / RAND_MAX - .1));
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -110,55 +131,39 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	unsigned int fragmentShader2 = glCreateShader(GL_FRAGMENT_SHADER);
+	unsigned int shaderProgram = glCreateProgram();
+	unsigned int shaderProgram2 = glCreateProgram();
+
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
-
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		cout << "ERROR: shader vertex compilation failed" << infoLog << endl;
-	}
-
-	int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		cout << "error: shader fragment compilation failed" << infoLog << endl;
-	}
-
-	int shaderProgram = glCreateProgram();
+	glShaderSource(fragmentShader2, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader2);
+	// 1
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
+	// 2
+	glAttachShader(shaderProgram2, vertexShader);
+	glAttachShader(shaderProgram2, fragmentShader2);
+	glLinkProgram(shaderProgram);
 
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		cout << "error: shader linking failed" << infoLog << endl;
-	}
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	float vertices[] = {
-		0.5f, 0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		-0.5f, 0.5f, 0.0f
-	};
 	unsigned int indices[] = {
 		0,1,3,
 		1,2,3
 	};
 
 
-	glViewport(0, 600, 800, 0);
+	//glViewport(0, 600, 800, 0);
 
 	unsigned int VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
@@ -168,7 +173,7 @@ int main(int argc, char **argv)
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*players[0].length, players[0].vertices, GL_DYNAMIC_DRAW);
 
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -177,17 +182,18 @@ int main(int argc, char **argv)
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	
 
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLE_FAN, 6, GL_UNSIGNED_INT, 0);
+		for (int j = 0; j < i.keyboard_count(); ++j) {
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*players[j].length, players[j].vertices, GL_DYNAMIC_DRAW);
+			glUseProgram(shaderProgram);
+			glBindVertexArray(VAO);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -217,13 +223,13 @@ void *my_keyboard_handler(void *input)
 			float o_x = players[j].x;
 			float o_y = players[j].y;
 			if (i->get_key(j, 103))
-				players[j].y -= 1;
+				players[j].move(0, .005);
 			if (i->get_key(j, 105))
-				players[j].x -= 1;
+				players[j].move(-.005, 0);
 			if (i->get_key(j, 106))
-				players[j].x += 1;
+				players[j].move(.005, 0);
 			if (i->get_key(j, 108))
-				players[j].y += 1;
+				players[j].move(0, -.005);
 			if (o_x != players[j].x || o_y != players[j].y)
 				isIdle = false;
 		}
