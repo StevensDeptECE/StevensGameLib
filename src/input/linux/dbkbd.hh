@@ -128,7 +128,7 @@ private:
 				
 			}
 			offset = (offset == keyboards.size() - 1) ? 0 : offset + 1;
-			usleep(10000); // 10000us = 10ms
+			usleep(1000); // 1000us = 1ms
 			fflush(stdout);
 		}
 	}
