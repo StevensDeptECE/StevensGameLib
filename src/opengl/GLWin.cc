@@ -1,7 +1,7 @@
 #include "GLWin.hh"
 using namespace std;
 
-GLWin::fontInit() {
+void GLWin::fontInit() {
 	#if 0
 	// Freetype
 	FT_Library ft;
@@ -32,13 +32,13 @@ GLWin::GLWin(uint32_t width, uint32_t height, uint32_t bgColor, uint32_t fgColor
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 #endif
-	win = glfwCreateWindow(width, height, title, NULL, NULL);
-	if (window == nullptr){
+	win = glfwCreateWindow(width, height, title, nullptr, nullptr);
+	if (win == nullptr){
 		glfwTerminate();
 		throw "Failed to open GLFW window";
 	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwMakeContextCurrent(win);
+	//	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		throw "Failed to initialize GLAD";
@@ -48,18 +48,28 @@ GLWin::GLWin(uint32_t width, uint32_t height, uint32_t bgColor, uint32_t fgColor
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	fontInit();
-	projection = glm::ortho(0.0f, static_cast<GLfloat>(WIDTH), 0.0f, static_cast<GLfloat>(HEIGHT));
+	projection = glm::ortho(0.0f, static_cast<GLfloat>(width), 0.0f, static_cast<GLfloat>(height));
+	init();
 }
 
-GLWin::mainLoop() {
-	while (!glfwWindowShouldClose(window)) {
+void GLWin::mainLoop() {
+	while (!glfwWindowShouldClose(win)) {
 		glfwPollEvents(); // Check and call events
 		//TODO: replace by calling our general, portable multi-input event system
 		// Clear the colorbuffer
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		render();
-		glfwSwapBuffers(window);        // Swap buffer so the scene shows on screen
+		glfwSwapBuffers(win);        // Swap buffer so the scene shows on screen
 	}
 	glfwTerminate();
+}
+
+void processInput(GLFWwindow *window) {
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+
+void GLWin::resize(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
 }
