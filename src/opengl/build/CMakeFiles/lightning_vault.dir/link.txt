@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/lightning_vault.dir/main.cpp.o  -o lightning_vault -rdynamic external/glfw-3.1.2/src/libglfw3.a libGLAD.a external/freetype-2.9/libfreetype.a -lX11 -lXrandr -lXinerama -lXi -lXxf86vm -lXcursor -lGL -ldl -lpthread -lz -lpng -lz -lpng -lharfbuzz -lharfbuzz-icu  -ldl

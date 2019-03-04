@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+25fa43a4bdb9f5b42541fcc0fbc9273c external/freetype-2.9/CMakeFiles/dist
+90887b0d24c1f8724b20302fd64e5c35 external/glfw-3.1.2/CMakeFiles/uninstall
+82417d69d9c387b8c9b16607219f4418 external/glfw-3.1.2/docs/CMakeFiles/docs
