@@ -15,26 +15,15 @@ uint32_t Shader::load(const char filename[], GLuint shaderType, const char shade
 	const char* sourceCode = shaderCode.c_str();
 	glShaderSource(id, 1, &sourceCode, nullptr);
 	glCompileShader(id);
-	checkCompileErrors(id, shaderTypeName);
-	return id;
-}
-
-void Shader::checkCompileErrors(GLuint shader, const std::string& type) {
 	GLint success;
-	GLchar infoLog[1024];
-	if(type != "PROGRAM") {
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-		if(!success) {
-			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-			cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- --\n";
-		}
-	} else {
-		glGetProgramiv(shader, GL_LINK_STATUS, &success);
-		if(!success) {
-			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-			cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- --\n";
-		}
+	glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+	if(!success) {
+		GLchar infoLog[1024];
+		glGetShaderInfoLog(id, 1024, NULL, infoLog);
+		cout << "Error compiling shader: " << shaderTypeName << "\n"
+				 << infoLog << "\n -- --------------------------------------------------- --\n";
 	}
+	return id;
 }
 
 Shader::Shader(const char vertexPath[], const char fragmentPath[], const char geometryPath[]) {
@@ -50,8 +39,16 @@ Shader::Shader(const char vertexPath[], const char fragmentPath[], const char ge
 			geometryShaderID = load(geometryPath, GL_GEOMETRY_SHADER, "GEOMETRY");
 			glAttachShader(progID, geometryShaderID);
 		}
+		GLint success;
+		GLchar infoLog[1024];
 		glLinkProgram(progID);
-		checkCompileErrors(progID, "PROGRAM");
+		glGetProgramiv(progID, GL_LINK_STATUS, &success);
+		if(!success) {
+			glGetProgramInfoLog(progID, 1024, NULL, infoLog);
+			cout << "Error linking shader:\n" <<
+				infoLog << "\n -- --------------------------------------------------- --\n";
+		}
+	
 		// delete the shaders as they're linked in now and no longer necessery
 		glDeleteShader(vertexShaderID);
 		glDeleteShader(fragmentShaderID);

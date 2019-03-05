@@ -1,5 +1,14 @@
 #pragma once
 
+/*
+ * Shader encapsulates the ugly GL API for compiling shaders.
+ * the private method load() loads shaders of vertex, fragment or geometry types
+ * The constructor links these together in a program and saves only the resulting linked ID.
+ * This object throws out all scratch data except for the program ID and what is stored on the graphics card.
+ * Author: Dov Kruger March 5, 2019
+ * TODO: methods are passed string objects which is a bit wasteful if they are constants. We should switch to const char*
+ * not that big a deal because it only happens when compiling and during rendering nothing happens.
+ */
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
@@ -10,7 +19,6 @@ class Shader {
 private:
 	uint32_t progID;
 	uint32_t load(const char filename[], uint32_t shaderType, const char shaderTypeName[]);
-	void checkCompileErrors(GLuint shader, const std::string& type);
 public:
 	Shader(const char vertexPath[], const char fragmentPath[], const char geometryPath[] = nullptr);
 
