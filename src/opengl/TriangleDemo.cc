@@ -3,15 +3,16 @@ using namespace std;
 class Triangle : public GLWin {
 private:
 	GLuint vao, vbo;
-
+	Shader s;
 public:
-	Triangle() : GLWin(1024,800, 0xFF0000, 0xFFFFFF, "triangle") {
+	Triangle() : GLWin(1024,800, 0xFF0000, 0xFFFFFF, "triangle"),
+							 s("shaders/common.vs", "shaders/common.fs")
+	{
 
 	}
 	~Triangle() {
 		glDeleteBuffers(1, &vbo);
 		glDeleteVertexArrays(1, &vao);
-		glDeleteProgram(programID);
 	}
 	void init() {
 		glGenVertexArrays(1, &vao);
@@ -29,6 +30,7 @@ public:
 
 	}
 	void render() {
+		s.use(); // invoke the shaders we defined here
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glVertexAttribPointer(
@@ -45,7 +47,8 @@ public:
 		glDisableVertexAttribArray(0);
 	}
 
-}
+};
+
 int main() {
 	try {
 		Triangle t;
