@@ -53,6 +53,7 @@ GLWin::GLWin(uint32_t width, uint32_t height, uint32_t bgColor, uint32_t fgColor
 }
 
 void GLWin::mainLoop() {
+	init(); // call the child class method to set up
 	while (!glfwWindowShouldClose(win)) {
 		glfwPollEvents(); // Check and call events
 		//TODO: replace by calling our general, portable multi-input event system

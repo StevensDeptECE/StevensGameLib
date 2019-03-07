@@ -1,7 +1,8 @@
 # we compile with external/glm-0.9.7.1 in the path so that it does not have to be installed into the system, we can get it locally
 # same for glad
 
-CXX	:= g++ -std=c++11 -I external -I external/glm-0.9.7.1 -I external/glad/include $(DEBUG) $(OPT)
+DEBUG	:=	-g
+CXX	:= g++ $(DEBUG) -std=c++11 -I external -I external/glm-0.9.7.1 -I external/glad/include $(DEBUG) $(OPT)
 SHARED	:= GLWin.o glad.o shader.o
 OBJ	:= main.o $(SHARED)
 LIBS	:= -lglfw -lGL -lX11 -ldl

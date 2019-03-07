@@ -31,6 +31,8 @@ public:
 	}
 	void render() {
 		s.use(); // invoke the shaders we defined here
+		glm::vec3 color(1.0,1.0,0);
+		s.setVec3("ourColor", color); // pass the color to the shader
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glVertexAttribPointer(
