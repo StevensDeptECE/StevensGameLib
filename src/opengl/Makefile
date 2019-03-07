@@ -29,3 +29,6 @@ shader.o: shader.cpp shader.hpp
 
 glad.o: external/glad/src/glad.c
 	g++ -g -std=c++11 -c -I external/glad/include external/glad/src/glad.c -o glad.o
+
+clean:
+	rm *.o demo1 testwin
