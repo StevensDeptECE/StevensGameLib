@@ -31,7 +31,7 @@ Shader::Shader(const char vertexPath[], const char fragmentPath[], const char ge
 		uint32_t vertexShaderID = load(vertexPath, GL_VERTEX_SHADER, "VERTEX");          // load the vertex shader
 		uint32_t fragmentShaderID = load(fragmentPath, GL_FRAGMENT_SHADER, "FRAGMENT");  // load the fragment shader
 		uint32_t geometryShaderID;
-		uint32_t progID = glCreateProgram();
+		progID = glCreateProgram();
 		glAttachShader(progID, vertexShaderID);
 		glAttachShader(progID, fragmentShaderID);
 		// if geometry shader path is present, also load a geometry shader
