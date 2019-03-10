@@ -33,6 +33,8 @@ public:
 	/*
 		void loadObject(Model& m, const char filename[]);
     void saveImage(Image& m); // save screenshot
+		Shape* pick(int x, int y); // click on (x,y) and get back frontmost shape
+		Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
 
 	 */
 	void mainLoop();

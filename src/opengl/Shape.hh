@@ -2,10 +2,10 @@
 
 class Shape {
 private:
-	GLuint vao, vbo;
+	uint32_t vao, vbo;
 	uint32_t numPoints;
 public:
-	void init(GLfloat vertices[], uint32_t numPoints) {
+	void init(float vertices[], uint32_t numPoints) {
 		this->numPoints = numPoints;
 		glGenVertexArrays(1, &vao);
 		glBindVertexArray(vao);
@@ -13,6 +13,14 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, len, vertices, GL_STATIC_DRAW);
 	}
+	void addTriangle(uint32_t a, uint32_t b, uint32_t c) {
+		
+	}
+	void addRectangle(uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
+		addTriangle(a, c, b);
+		addTriangle(c, d, b);
+	}
+	
 	void render() {
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
