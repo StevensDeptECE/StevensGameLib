@@ -1,45 +1,40 @@
-#if _MSC_VER >= 1600  /* 1600 is Microsoft Visual Studio 2010 */
-#pragma execution_character_set("utf-8")
-#endif
-
-// Std
-#include <iostream>
-#include <map>
-#include <string>
-#include <vector>
-#include <codecvt>
-#include <locale>
-// GLAD
-#include <glad/glad.h> 
-// GLFW
-#include <GLFW/glfw3.h>
 // GLM
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#if 0
-// TODO: add Freetype later
-#include <ft2build.h>
-#include FT_FREETYPE_H  
-#endif
-#include "shader.hpp"
+
+class GLFWwindow; // forward declaration, simplify: include file not needed here
 
 class GLWin {
 private:
 	GLFWwindow* win;
 	uint32_t bgColor, fgColor;
 	
-	static void resize(GLFWwindow* window, int width, int height);
-	void processInput(GLFWwindow *window);
-	GLuint width, height; // the current height and width of this window
-	GLuint VAO, VBO; // TODO: used for storing id of vertex array object and vertex buffer object. Should not be here
-	// should be one per object that needs local storage on the graphics card, not one for the entire app
+	static void resize(GLFWwindow* win, int width, int height);
+	void processInput(GLFWwindow *win);
+	uint32_t width, height; // the current height and width of this window
 	glm::mat4 projection; // current projection for this window
 	void fontInit();
 public:
 	GLWin(uint32_t width, uint32_t height, uint32_t bgColor, uint32_t fgColor, const char title[]);
 	virtual void init() {}
 	virtual void render() {}
+
+	/* Manage animation with calls. Setting a time t, every time a tick happens
+		 all animation moves forward to the next time t (integer)
+	*/
+	void resetAnim();      // set t=0
+	void setTime(float t); // set t to any desired value
+	void tick();           // move t forward
+	void setEndTime(float t); // define the end time. When end is reached restart
+	void setDesiredColor(const glm::vec3& c, float delta);
+
+	// void setAnimation(Shape& s, glm::mat&) // transform s by matrix every tick
+
+	void random(glm::vec3& v); // set this vec3 to random (0..1) for each
+	/*
+		void loadObject(Model& m, const char filename[]);
+    void saveImage(Image& m); // save screenshot
+
+	 */
 	void mainLoop();
 };
 

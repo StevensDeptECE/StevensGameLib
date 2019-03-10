@@ -1,5 +1,4 @@
 #include "GLWin.hh"
-#include "shader.hpp"
 using namespace std;
 
 glm::vec3 operator *(const glm::vec3& v, double s) {
@@ -12,7 +11,7 @@ double dist(const glm::vec3& a, const glm::vec3& b) {
 
 class Triangle : public GLWin {
 private:
-	uint32_t vao, vbo;
+	GLuint vao, vbo;
 	Shader s;
 	glm::vec3 currentColor, targetColor, deltaColor;
 public:
@@ -47,7 +46,7 @@ public:
 		s.setVec3("ourColor", currentColor); // pass the color to the shader
 		currentColor += deltaColor;
 		if (dist(currentColor, targetColor) < 0.01) {
-			random(targetColor);
+			targetColor = glm::vec3(1,1,1) - targetColor;
 			deltaColor = (targetColor - currentColor) * 0.01;
 		}
 		glEnableVertexAttribArray(0);

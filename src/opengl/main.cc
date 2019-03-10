@@ -1,3 +1,4 @@
+#include <iostream>
 #include "GLWin.hh"
 using namespace std;
 int main() {

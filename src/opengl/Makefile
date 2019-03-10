@@ -4,15 +4,21 @@
 DEBUG	:=	-g
 CXX	:= g++ $(DEBUG) -std=c++11 -I external -I external/glm-0.9.7.1 -I external/glad/include $(DEBUG) $(OPT)
 SHARED	:= GLWin.o glad.o shader.o
-OBJ	:= main.o $(SHARED)
-LIBS	:= -lglfw -lGL -lX11 -ldl
+LIBS	:= -L . -lsitgame -lglfw -lGL -lX11 -ldl
 
 #	g++ -g -std=c++11  -pthread -fsanitize=address ./linux/ltest.cc ./linux/glad.o -o dbkbd 
 
-testwin: $(OBJ) 
+OBJ	:= main.o libsitgame.a
+
+all: testwin demo1
+
+testwin: $(OBJ)
 	$(CXX) $(OBJ) -o testwin $(LIBS)
 
-DEMO1OBJ	:= TriangleDemo.o $(SHARED)
+libsitgame.a: $(SHARED)
+	ar rvs libsitgame.a $(SHARED) 
+
+DEMO1OBJ	:= TriangleDemo.o libsitgame.a
 demo1: $(DEMO1OBJ)
 	$(CXX) $(DEMO1OBJ) -o demo1 $(LIBS)
 

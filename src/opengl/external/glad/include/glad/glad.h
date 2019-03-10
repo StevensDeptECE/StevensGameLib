@@ -19,9 +19,7 @@
         https://glad.dav1d.de/#profile=core&language=c&specification=gl&loader=on&api=gl%3D4.6
 */
 
-
-#ifndef __glad_h_
-#define __glad_h_
+#pragma once
 
 #ifdef __gl_h_
 #error OpenGL header already included, remove this include, glad already provides it
@@ -3685,4 +3683,3 @@ GLAPI PFNGLPOLYGONOFFSETCLAMPPROC glad_glPolygonOffsetClamp;
 }
 #endif
 
-#endif
