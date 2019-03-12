@@ -2,9 +2,9 @@
 # same for glad
 
 DEBUG	:=	-g
-CXX	:= g++ $(DEBUG) -std=c++11 -I external -I external/glm-0.9.7.1 -I external/glad/include $(DEBUG) $(OPT)
-SHARED	:= GLWin.o glad.o shader.o
-LIBS	:= -L . -lsitgame -lglfw -lGL -lX11 -ldl
+CXX	:= g++ $(DEBUG) -std=c++11 -I external -I external/FLIF/src/library -I external/glm-0.9.7.1 -I external/glad/include $(DEBUG) $(OPT)
+SHARED	:= GLWin.o glad.o shader.o loadflif.o
+LIBS	:= -L . -L external/FLIF/src -lsitgame -lglfw -lGL -lX11 -ldl -lflif
 
 #	g++ -g -std=c++11  -pthread -fsanitize=address ./linux/ltest.cc ./linux/glad.o -o dbkbd 
 
@@ -22,6 +22,10 @@ DEMO1OBJ	:= TriangleDemo.o libsitgame.a
 demo1: $(DEMO1OBJ)
 	$(CXX) $(DEMO1OBJ) -o demo1 $(LIBS)
 
+DEMO2OBJ	:= ImageTile.o libsitgame.a
+demo2: $(DEMO2OBJ)
+	$(CXX) $(DEMO2OBJ) -o demo2 $(LIBS)
+
 TriangleDemo.o: TriangleDemo.cc
 	$(CXX) -c $<
 
@@ -36,6 +40,9 @@ shader.o: shader.cpp shader.hpp
 
 glad.o: external/glad/src/glad.c
 	g++ -g -std=c++11 -c -I external/glad/include external/glad/src/glad.c -o glad.o
+
+loadflif.o: loadflif.cc
+	$(CXX) -c loadflif.cc
 
 clean:
 	rm *.o demo1 testwin

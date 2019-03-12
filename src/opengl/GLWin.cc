@@ -7,7 +7,7 @@
 
 // Std
 #include <iostream>
-#include <map>
+//#include <map>
 #include <string>
 #include <vector>
 //#include <codecvt>
@@ -16,6 +16,8 @@
 
 // GLFW
 #include <GLFW/glfw3.h>
+
+#include "loadflif.cc"
 
 //matrix projections
 //#include <glm/glm.hpp>
@@ -110,3 +112,4 @@ void GLWin::resize(GLFWwindow* window, int width, int height) {
 void GLWin::random(glm::vec3& v) {
 	v.x = u01(gen), v.y = u01(gen), v.y = u01(gen);
 }
+	

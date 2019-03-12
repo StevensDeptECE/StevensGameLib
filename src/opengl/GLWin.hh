@@ -1,3 +1,4 @@
+#pragma once
 // GLM
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -7,6 +8,7 @@ class GLWin {
 private:
 	GLFWwindow* win;
 	uint32_t bgColor, fgColor;
+	//	std::vector<Drawable*> drawlist;
 	
 	static void resize(GLFWwindow* win, int width, int height);
 	void processInput(GLFWwindow *win);
@@ -17,6 +19,19 @@ public:
 	GLWin(uint32_t width, uint32_t height, uint32_t bgColor, uint32_t fgColor, const char title[]);
 	virtual void init() {}
 	virtual void render() {}
+
+#if 0
+	virtual void init() {
+		for (auto d : drawlist)
+			d->init();
+	}
+	virtual void render() {
+		for (auto d : drawlist)
+			d->render();		
+	}
+
+	void add(Drawable* d) { drawlist.push_back(d); }
+#endif
 
 	/* Manage animation with calls. Setting a time t, every time a tick happens
 		 all animation moves forward to the next time t (integer)
@@ -37,6 +52,7 @@ public:
 		Shape* pick(int x, int y, Shape*); // click on (x,y), get Shape behind
 
 	 */
+	uint32_t loadImage(const char filename[]);
 	void mainLoop();
 };
 
