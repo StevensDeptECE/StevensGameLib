@@ -18,16 +18,13 @@ testwin: $(OBJ)
 libsitgame.a: $(SHARED)
 	ar rvs libsitgame.a $(SHARED) 
 
-DEMO1OBJ	:= TriangleDemo.o libsitgame.a
+DEMO1OBJ	:= demo1.o libsitgame.a
 demo1: $(DEMO1OBJ)
 	$(CXX) $(DEMO1OBJ) -o demo1 $(LIBS)
 
 DEMO2OBJ	:= ImageTile.o libsitgame.a
 demo2: $(DEMO2OBJ)
 	$(CXX) $(DEMO2OBJ) -o demo2 $(LIBS)
-
-TriangleDemo.o: TriangleDemo.cc
-	$(CXX) -c $<
 
 main.o: main.cc GLWin.hh
 	$(CXX) -c main.cc
@@ -46,3 +43,8 @@ loadflif.o: loadflif.cc
 
 clean:
 	rm *.o demo1 testwin
+
+# Triangle logic is for rapid intersection of shapes, not really for here
+# just throwing it in for the moment
+testTriangle: testTriangle.cc Triangle.hh
+	$(CXX) testTriangle.cc -o testTriangle
