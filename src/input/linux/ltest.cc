@@ -5,6 +5,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <vector>
+#include <iostream>
+#include <unistd.h>
+
+using namespace std;
+
 const char *vertexShaderTemp = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
