@@ -71,6 +71,7 @@ void Inputs::process_chars(int id, unsigned short scan_code, bool down)
 {
 	// TODO: Figure out of 'bool down' is necessary
 	keys[id].keys[scan_code>>5] ^= 1 << (scan_code&0x1F);
+	std::cout << "key: " << scan_code << endl;
 }
 
 // Main polling loop that calls process_chars()
