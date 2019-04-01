@@ -1,13 +1,16 @@
-#ifndef _PLAYER_H
-#define _PLAYER_H
+#ifndef _BULLET_H
+#define _BULLET_H
 
-class Player {
+class Bullet {
 private:
 	const int size = 75;
 	double r, g, b;
 	unsigned int indices[6];
-	float vertices[12] = {0};
+	float x, y;
+	float angle;
 	int length = 12;
+	float dist = 0;
+	float vertices[31 * 6] = {0};
 
 	void make_shader();
 	void set_shape();
@@ -17,13 +20,12 @@ public:
 	unsigned int shaderProgram;
 	unsigned int VBO, VAO;
 	unsigned int EBO;
-	float x, y;
-	float angle;
 
-	Player(float a, float b);
+	Bullet(float a, float b, float c);
 	void move(float x, float y);
 	void rotate(float angle);
 	void create_shader();
+	void update();
 	void render();
 };
 

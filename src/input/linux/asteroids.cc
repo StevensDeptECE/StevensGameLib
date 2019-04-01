@@ -1,5 +1,6 @@
 #include "dbkbd.hh"
 #include "player.hh"
+#include "bullet.hh"
 
 #include <ctime>
 #include <pthread.h>
@@ -8,18 +9,23 @@
 #include <iostream>
 #include <unistd.h>
 
+#include <glm/glm.hpp>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 
 std::vector<Player> players;
+std::vector<Bullet> bullets;
 bool play = true;
+int bulletId = -1;
+int *bulletQueue;
 
 void *handle_input(void *);
 void handle_input();
 void *update(void *);
 void render();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void createBullet(int id);
 
 Inputs *p_inp = nullptr;
 
@@ -35,6 +41,10 @@ int main(int argc, char **argv)
 
 	for (int j = 0; j < num_players; ++j)
 		players.push_back(Player((double)rand() / RAND_MAX - .1, (double)rand() / RAND_MAX - .1));
+
+	bulletQueue = new int[num_players];
+	for (int i = 0; i < num_players; ++i)
+		bulletQueue[i] = 0;
 
 	// Create keyboard handler thread
 	pthread_t myThread;
@@ -64,12 +74,19 @@ int main(int argc, char **argv)
 		players[j].create_shader();
 	}
 
-
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		render();
+
+		for (int i = 0; i < num_players; ++i) {
+			if (bulletQueue[i]) {
+				createBullet(i);
+				bulletQueue[i] = 0;
+			}
+		}
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -94,8 +111,9 @@ void *update(void *)
 {
 	while (play) {
 		handle_input();
-		for (int i = 0; i < players.size(); ++i) {
+		for (int i = 0; i < bullets.size(); ++i) {
 			//	players[i].update();
+			bullets[i].update();
 		}
 		usleep(1000);
 	}
@@ -107,9 +125,25 @@ void render() {
 	for (int j = 0; j < players.size(); ++j) {
 		players[j].render();
 	}
+
+	for (int j = 0; j < bullets.size(); ++j) {
+		bullets[j].render();
+	}
+
 }
 
+const float pi = 3.141592654;
+void createBullet(int id)
+{
+	
+	float x = cos(players[id].angle+pi/2.0) * (75 / 800.0 / 2) + (players[id].x + 75 / 800.0 / 2);
+	float y = sin(players[id].angle+pi/2.0) * (75 / 800.0 / 2) + (players[id].y - 75 / 800.0 / 2);
+	bullets.push_back(Bullet(x, y, players[id].angle));
+	bullets[bullets.size() - 1].create_shader();
+}
 
+int space_counter = 0;
+int prev_space = 0;
 void handle_input()
 {
 	Inputs *i = p_inp;
@@ -128,6 +162,20 @@ void handle_input()
 			players[j].rotate(.005);
 		if (i->get_key(j, 106))
 			players[j].rotate(-.005);
+
+		// space
+		if (i->get_key(j, 57)) {
+			if (!prev_space || space_counter == 100) {
+				bulletQueue[j] = 1;
+				space_counter = 0;
+			}
+			prev_space = 1;
+			++space_counter;
+		} else if (!i->get_key(j, 57)) {
+			prev_space = 0;
+			space_counter = 0;
+		}
+
 	}
 }
 
