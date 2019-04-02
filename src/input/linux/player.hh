@@ -25,6 +25,7 @@ public:
 	void rotate(float angle);
 	void create_shader();
 	void render();
+	void update();
 };
 
 #endif

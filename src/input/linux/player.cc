@@ -1,5 +1,6 @@
 #include "player.hh"
 #include <cstdio>
+#include <iostream>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -68,6 +69,24 @@ void Player::move(float x, float y)
 void Player::rotate(float angle)
 {
 	this->angle += angle;
+}
+
+void Player::update()
+{
+	// Check boundaries
+	float cx = x+size/2.0/800.0;
+	float cy = y-size/2.0/800.0;
+	//std::cout << "cx: " << cx << "  cy: " << cy << std::endl;
+	if (cx < -1)
+		x = 1-size/2.0/800.0;
+	if (cx > 1)
+		x = -1;
+	if (cy < -1)
+		y = 1;
+	if (cy > 1)
+		y = -1+size/2.0/800.0;
+	//trans = glm::translate(trans, glm::vec3(x+size/800.0/2, y-size/800.0/2, 1.0));
+
 }
 
 void Player::set_shape()

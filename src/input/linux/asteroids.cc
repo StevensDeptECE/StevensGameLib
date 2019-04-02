@@ -127,8 +127,11 @@ void *update(void *)
 {
 	while (play) {
 		handle_input();
-		int i = 0;
-		while (i < bullets.size()) {
+		int i;
+		for (i = 0; i < players.size(); ++i) {
+			players[i].update();
+		}
+		for (i = 0; i < bullets.size(); ) {
 			bullets[i].update();
 			if (bullets[i].should_remove()) {
 				bullets.erase(bullets.begin() + i);
