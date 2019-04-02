@@ -49,22 +49,18 @@ void Bullet::make_shader()
 
 // shared by all objects
 
-Bullet::Bullet(float a, float b, float c)// : x(a), y(b)
+Bullet::Bullet(float a, float b, float c)
 {
 	x = a;
 	y = b;
-//	r = (double)rand() / RAND_MAX;
-//	g = (double)rand() / RAND_MAX;
-//	b = (double)rand() / RAND_MAX;
 	r = 1.0f;
 	g = 1.0f;
 	b = 1.0f;
 	length = 12;
-//	x = 0 - size / 800.0 / 2;
-//	y = 0 + size / 800.0 / 2;
 	set_shape();
 	angle = 0.0f;
 	rotate(c);
+	remove = 0;
 }
 
 void Bullet::move(float x, float y)
@@ -75,30 +71,28 @@ void Bullet::move(float x, float y)
 
 void Bullet::rotate(float angle)
 {
-	this->angle += angle + 3.141592654/2;
+	this->angle += angle + glm::pi<float>()/2;
 }
 
 void Bullet::update()
 {
 	dist += 0.001;	
-	//rotate(0.01);
+	
+	// Check boundaries
+	remove = (x+dist*cos(angle) < -1 || x+dist*cos(angle) > 1
+			|| y+dist*sin(angle) < -1 || y+dist*sin(angle) > 1);
+}
+
+int Bullet::should_remove()
+{
+	return remove;
 }
 
 void Bullet::set_shape()
 {
-//	if (this->x < -1)
-//		this->x = -1;
-//	if (this->x > 1-size/800.0)
-//		this->x = 1-size/800.0;
-//	if (this->y > 1)
-//		this->y = 1;
-//	if (this->y < size/800.0-1)
-//		this->y = size/800.0-1;
-
-
 	int steps = 30;
 	float start_angle = 0.0f;
-	float end_angle = 2 * 3.1415926536;
+	float end_angle = 2 * glm::pi<float>();
 
 	float t = start_angle;
 
@@ -106,12 +100,7 @@ void Bullet::set_shape()
 
 	int pos = 0;
 
-
-
 	for (int i = 0; i <= steps; i++) {
-//		float x_inner = radius_inner * cos(t) + x0;
-//		float y_inner = radius_inner * sin(t) + y0;
-
 		float x_inner = 0;
 		float y_inner = 0;
 
@@ -127,29 +116,13 @@ void Bullet::set_shape()
 		vertices[pos++] = 0.0f;
 
 		t += (end_angle - start_angle) / steps;
-
-		//std::cout << "x_inner: " << x_inner << "   x_outer: " << x_outer << std::endl;
-
 	}
-
-
-
-
-//	indices[0] = 0;
-//	indices[1] = 1;
-//	indices[2] = 2;
-//	indices[3] = 0;
-//	indices[4] = 2;
-//	indices[5] = 3;
-
 }
 
 void Bullet::set_transform()
 {
 	glm::mat4 trans = glm::mat4(1.0f);
-	//trans = glm::translate(trans, glm::vec3(x+size/800.0/2, y+size/800.0/2, 1.0));
 	trans = glm::translate(trans, glm::vec3(x + dist * cos(angle), y + dist * sin(angle), 1.0));
-	//trans = glm::rotate(trans, angle, glm::vec3(0.0, 0.0, 1.0));
 
 	unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));

@@ -3,7 +3,6 @@
 
 class Bullet {
 private:
-	const int size = 75;
 	double r, g, b;
 	unsigned int indices[6];
 	float x, y;
@@ -11,6 +10,7 @@ private:
 	int length = 12;
 	float dist = 0;
 	float vertices[31 * 6] = {0};
+	int remove;
 
 	void make_shader();
 	void set_shape();
@@ -27,6 +27,7 @@ public:
 	void create_shader();
 	void update();
 	void render();
+	int should_remove();
 };
 
 #endif

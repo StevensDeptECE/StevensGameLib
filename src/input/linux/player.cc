@@ -46,9 +46,7 @@ void Player::make_shader()
 }
 
 
-// shared by all objects
-
-Player::Player(float a, float b)// : x(a), y(b)
+Player::Player(float a, float b)
 {
 	r = (double)rand() / RAND_MAX;
 	g = (double)rand() / RAND_MAX;
