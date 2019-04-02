@@ -20,6 +20,11 @@ bool play = true;
 int bulletId = -1;
 int *bulletQueue;
 
+// Put this stuff in a struct
+// or something useful
+int *space_counter;
+int *prev_space;
+
 void *handle_input(void *);
 void handle_input();
 void *update(void *);
@@ -39,12 +44,16 @@ int main(int argc, char **argv)
 	int num_players = inp.keyboard_count(); 
 	std::cout << "Keyboards: " << num_players << std::endl;
 
-	for (int j = 0; j < num_players; ++j)
-		players.push_back(Player((double)rand() / RAND_MAX - .1, (double)rand() / RAND_MAX - .1));
-
 	bulletQueue = new int[num_players];
-	for (int i = 0; i < num_players; ++i)
-		bulletQueue[i] = 0;
+	space_counter = new int[num_players];
+	prev_space = new int[num_players];
+	for (int j = 0; j < num_players; ++j) {
+		players.push_back(Player((double)rand() / RAND_MAX - .1, (double)rand() / RAND_MAX - .1));
+		bulletQueue[j] = 0;
+		space_counter[j] = 0;
+		prev_space[j] = 0;
+	}
+
 
 	// Create keyboard handler thread
 	pthread_t myThread;
@@ -142,8 +151,6 @@ void createBullet(int id)
 	bullets[bullets.size() - 1].create_shader();
 }
 
-int space_counter = 0;
-int prev_space = 0;
 void handle_input()
 {
 	Inputs *i = p_inp;
@@ -165,15 +172,15 @@ void handle_input()
 
 		// space
 		if (i->get_key(j, 57)) {
-			if (!prev_space || space_counter == 100) {
+			if (!prev_space[j] || space_counter[j] == 100) {
 				bulletQueue[j] = 1;
-				space_counter = 0;
+				space_counter[j] = 0;
 			}
-			prev_space = 1;
-			++space_counter;
+			prev_space[j] = 1;
+			++space_counter[j];
 		} else if (!i->get_key(j, 57)) {
-			prev_space = 0;
-			space_counter = 0;
+			prev_space[j] = 0;
+			space_counter[j] = 0;
 		}
 
 	}
