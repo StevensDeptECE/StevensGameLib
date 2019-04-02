@@ -49,9 +49,9 @@ void Player::make_shader()
 
 Player::Player(float a, float b)
 {
-	r = (double)rand() / RAND_MAX;
-	g = (double)rand() / RAND_MAX;
-	b = (double)rand() / RAND_MAX;
+	r = (double)rand() / RAND_MAX * .25 + .75;
+	g = (double)rand() / RAND_MAX * .25 + .75;
+	b = (double)rand() / RAND_MAX * .25 + .75;
 	length = 12;
 	x = 0 - size / 800.0 / 2;
 	y = 0 + size / 800.0 / 2;
