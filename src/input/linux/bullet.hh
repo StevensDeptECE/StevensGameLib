@@ -17,7 +17,7 @@ private:
 	void set_transform();
 
 public:
-	unsigned int shaderProgram;
+	static unsigned int shaderProgram;
 	unsigned int VBO, VAO;
 	unsigned int EBO;
 

@@ -20,6 +20,7 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
     "   FragColor = vec4(%ff, %ff, %ff, 1.0f);\n"
     "}\n\0";
 
+unsigned int Bullet::shaderProgram = -1;
 
 void Bullet::make_shader()
 {
@@ -44,18 +45,18 @@ void Bullet::make_shader()
 
 	free(vertexShaderSource);
 	free(fragmentShaderSource);
+
+	std::cout << "made shader for bullet" << std::endl;
 }
 
 
-// shared by all objects
-
-Bullet::Bullet(float a, float b, float c)
+Bullet::Bullet(float x, float y, float c)
 {
-	x = a;
-	y = b;
+	this->x = x;
+	this->y = y;
 	r = 1.0f;
 	g = 1.0f;
-	b = 1.0f;
+	b = 0.0f;
 	length = 12;
 	set_shape();
 	angle = 0.0f;
@@ -130,9 +131,10 @@ void Bullet::set_transform()
 
 void Bullet::create_shader()
 {
-	shaderProgram = glCreateProgram();
-	make_shader();
-
+	if (shaderProgram == -1) {
+		shaderProgram = glCreateProgram();
+		make_shader();
+	}
 
 	// 1. bind Vertex Array Object
 	glGenVertexArrays(1, &VAO);
