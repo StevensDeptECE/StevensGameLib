@@ -1,7 +1,7 @@
 CXX := g++ -g -std=c++11
 
-asteroids: dbkbd.o player.o bullet.o asteroids.o glad.o shader.o
-	$(CXX) dbkbd.o player.o bullet.o asteroids.o glad.o shader.o -pthread -lglfw -lGL -lX11 -ldl -o a.out
+asteroids: dbkbd.o player.o bullet.o asteroids.o glad.o shader.o game.o
+	$(CXX) dbkbd.o player.o bullet.o asteroids.o glad.o shader.o game.o -pthread -lglfw -lGL -lX11 -ldl -o a.out
 
 asteroids.o: asteroids.cc
 	$(CXX) -c -I./includes/glad/include asteroids.cc -o asteroids.o 	
@@ -20,6 +20,9 @@ shader.o: shader.cc shader.hh
 
 glad.o: ./includes/glad/src/glad.c
 	$(CXX) -c -I./includes/glad/include ./includes/glad/src/glad.c -o glad.o
+
+game.o: game.cc game.hh
+	$(CXX) -c -I./includes/glad/include -I./includes/glm game.cc -o game.o
 
 clean:
 	rm -f *.o *.out

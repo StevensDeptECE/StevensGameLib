@@ -26,7 +26,7 @@ public:
 	void move(float x, float y);
 	void rotate(float angle);
 	void create_shader();
-	void update();
+	void update(float dt);
 	void render();
 	int should_remove();
 };

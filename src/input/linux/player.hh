@@ -22,11 +22,11 @@ public:
 	float angle;
 
 	Player(float a, float b);
-	void move(float x, float y);
-	void rotate(float angle);
+	void move(float x, float y, float dt);
+	void rotate(float angle, float dt);
 	void create_shader();
 	void render();
-	void update();
+	void update(float dt);
 };
 
 #endif

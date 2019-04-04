@@ -24,8 +24,8 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
 
 void Player::make_shader()
 {
-	char *vertexShaderSource = (char*)malloc(256);
-	char *fragmentShaderSource = (char*)malloc(256);
+	char *vertexShaderSource = new char[256];
+	char *fragmentShaderSource = new char[256];
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	strcpy(vertexShaderSource, vertexShaderTemp);
@@ -37,28 +37,33 @@ void Player::make_shader()
 
 Player::Player(float a, float b)
 {
-	r = (double)rand() / RAND_MAX * .45 + .65;
-	g = (double)rand() / RAND_MAX * .45 + .65;
-	b = (double)rand() / RAND_MAX * .45 + .65;
+	// Value between 0.4 and 1.0
+	r = (double)((rand()%(10-4+1) + 4) / 10.0);
+	g = (double)((rand()%(10-4+1) + 4) / 10.0);
+	b = (double)((rand()%(10-4+1) + 4) / 10.0);
+
+
+	std::cout << r << " " << g << " " << b << std::endl;
 	x = 0 - size / 800.0 / 2;
 	y = 0 + size / 800.0 / 2;
+	angle = 0;
 	set_shape();
 	x = a;
 	y = b;
 }
 
-void Player::move(float x, float y)
+void Player::move(float x, float y, float dt)
 {
-	this->x += x;
-	this->y += y;
+	this->x += x * dt;
+	this->y += y * dt;
 }
 
-void Player::rotate(float angle)
+void Player::rotate(float angle, float dt)
 {
-	this->angle += angle;
+	this->angle += angle * dt;
 }
 
-void Player::update()
+void Player::update(float dt)
 {
 	// Check boundaries
 	float cx = x+size/2.0/800.0;

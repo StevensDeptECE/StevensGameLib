@@ -63,9 +63,9 @@ void Bullet::rotate(float angle)
 	this->angle += angle + glm::pi<float>()/2;
 }
 
-void Bullet::update()
+void Bullet::update(float dt)
 {
-	dist += 0.001;	
+	dist += 1.0 * dt;	
 	
 	// Check boundaries
 	remove = (x+dist*cos(angle) < -1 || x+dist*cos(angle) > 1
