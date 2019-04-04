@@ -1,13 +1,14 @@
 #ifndef _BULLET_H
 #define _BULLET_H
 
+#include "shader.hh"
+
 class Bullet {
 private:
 	double r, g, b;
 	unsigned int indices[6];
 	float x, y;
 	float angle;
-	int length = 12;
 	float dist = 0;
 	float vertices[31 * 6] = {0};
 	int remove;
@@ -16,10 +17,10 @@ private:
 	void set_shape();
 	void set_transform();
 
+	static Shader *shader;
+
 public:
-	static unsigned int shaderProgram;
-	unsigned int VBO, VAO;
-	unsigned int EBO;
+	static unsigned int shaderDone;
 
 	Bullet(float a, float b, float c);
 	void move(float x, float y);

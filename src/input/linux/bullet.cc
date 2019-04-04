@@ -1,4 +1,5 @@
 #include "bullet.hh"
+#include "shader.hh"
 #include <cstdio>
 #include <iostream>
 #include <glad/glad.h>
@@ -20,7 +21,9 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
     "   FragColor = vec4(%ff, %ff, %ff, 1.0f);\n"
     "}\n\0";
 
-unsigned int Bullet::shaderProgram = -1;
+unsigned int Bullet::shaderDone = 0;
+
+Shader *Bullet::shader;
 
 void Bullet::make_shader()
 {
@@ -31,21 +34,7 @@ void Bullet::make_shader()
 	strcpy(vertexShaderSource, vertexShaderTemp);
 	sprintf(fragmentShaderSource, fragmentShaderTemp, r, g, b);
 
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	free(vertexShaderSource);
-	free(fragmentShaderSource);
-
+	shader = new Shader(vertexShaderSource, fragmentShaderSource);
 	std::cout << "made shader for bullet" << std::endl;
 }
 
@@ -57,7 +46,6 @@ Bullet::Bullet(float x, float y, float c)
 	r = 1.0f;
 	g = 1.0f;
 	b = 0.0f;
-	length = 12;
 	set_shape();
 	angle = 0.0f;
 	rotate(c);
@@ -125,44 +113,26 @@ void Bullet::set_transform()
 	glm::mat4 trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, glm::vec3(x + dist * cos(angle), y + dist * sin(angle), 1.0));
 
-	unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+	unsigned int transformLoc = glGetUniformLocation(shader->id, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 }
 
 void Bullet::create_shader()
 {
-	if (shaderProgram == -1) {
-		shaderProgram = glCreateProgram();
+	if (!shaderDone) {
 		make_shader();
+		shaderDone = 1;
 	}
 
-	// 1. bind Vertex Array Object
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	// 2. copy vertices array into Vertex Buffer Object
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-
-	// 3. copy indices array in element buffer
-//	glGenBuffers(1, &EBO);
-//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-//	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// 4. set vertex attributes pointers
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	shader->bind(vertices, 31 * 6, indices, 6);
 }
 
 void Bullet::render()
 {
-	glUseProgram(shaderProgram);
+	shader->use();
 	set_transform();
-	glBindVertexArray(VAO);
+	glBindVertexArray(shader->VAO);
 	glEnableVertexAttribArray(0);
-//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 31 * 2);
 	glDisableVertexAttribArray(0);
 }

@@ -1,4 +1,5 @@
 #include "player.hh"
+#include "shader.hh"
 #include <cstdio>
 #include <iostream>
 #include <glad/glad.h>
@@ -30,29 +31,15 @@ void Player::make_shader()
 	strcpy(vertexShaderSource, vertexShaderTemp);
 	sprintf(fragmentShaderSource, fragmentShaderTemp, r, g, b);
 
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	free(vertexShaderSource);
-	free(fragmentShaderSource);
+	shader = new Shader(vertexShaderSource, fragmentShaderSource);
 }
 
 
 Player::Player(float a, float b)
 {
-	r = (double)rand() / RAND_MAX * .25 + .75;
-	g = (double)rand() / RAND_MAX * .25 + .75;
-	b = (double)rand() / RAND_MAX * .25 + .75;
-	length = 12;
+	r = (double)rand() / RAND_MAX * .45 + .65;
+	g = (double)rand() / RAND_MAX * .45 + .65;
+	b = (double)rand() / RAND_MAX * .45 + .65;
 	x = 0 - size / 800.0 / 2;
 	y = 0 + size / 800.0 / 2;
 	set_shape();
@@ -86,7 +73,6 @@ void Player::update()
 	if (cy > 1)
 		y = -1+size/2.0/800.0;
 	//trans = glm::translate(trans, glm::vec3(x+size/800.0/2, y-size/800.0/2, 1.0));
-
 }
 
 void Player::set_shape()
@@ -127,42 +113,23 @@ void Player::set_transform()
 	trans = glm::translate(trans, glm::vec3(x+size/800.0/2, y-size/800.0/2, 1.0));
 	trans = glm::rotate(trans, angle, glm::vec3(0.0, 0.0, 1.0));
 
-	unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+	unsigned int transformLoc = glGetUniformLocation(shader->id, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 }
 
 void Player::create_shader()
 {
-	shaderProgram = glCreateProgram();
 	make_shader();
-
-
-	// 1. bind Vertex Array Object
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	// 2. copy vertices array into Vertex Buffer Object
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-
-	// 3. copy indices array in element buffer
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// 4. set vertex attributes pointers
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	shader->bind(vertices, 12, indices, 6);
 }
 
 void Player::render()
 {
-	glUseProgram(shaderProgram);
+	shader->use();
 	set_transform();
-	glBindVertexArray(VAO);
+	glBindVertexArray(shader->VAO);
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shader->EBO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glDisableVertexAttribArray(0);
 }

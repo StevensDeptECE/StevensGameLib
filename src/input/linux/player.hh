@@ -1,11 +1,13 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
+#include "shader.hh"
+
 class Player {
 private:
 	const int size = 75;
 	double r, g, b;
-	unsigned int indices[6];
+	unsigned int indices[6] = {0};
 	float vertices[12] = {0};
 	int length = 12;
 
@@ -13,10 +15,9 @@ private:
 	void set_shape();
 	void set_transform();
 
+	Shader *shader;
+
 public:
-	unsigned int shaderProgram;
-	unsigned int VBO, VAO;
-	unsigned int EBO;
 	float x, y;
 	float angle;
 

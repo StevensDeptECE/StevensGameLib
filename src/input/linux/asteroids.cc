@@ -108,11 +108,13 @@ int main(int argc, char **argv)
 		glfwPollEvents();
 	}
 
+	/* LEAVE THIS FOR DESTRUCTORS
 	for (int j = 0; j < num_players; ++j) {
 		glDeleteVertexArrays(1, &players[j].VAO);
 		glDeleteBuffers(1, &players[j].VBO);
 		glDeleteBuffers(1, &players[j].EBO);
 	}
+	*/
 
 	glfwTerminate();
 
@@ -183,9 +185,9 @@ void handle_input()
 
 		// rotation
 		if (i->get_key(j, 105))
-			players[j].rotate(.005);
+			players[j].rotate(.003);
 		if (i->get_key(j, 106))
-			players[j].rotate(-.005);
+			players[j].rotate(-.003);
 
 		// space
 		if (i->get_key(j, 57)) {
