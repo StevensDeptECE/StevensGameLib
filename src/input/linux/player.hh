@@ -5,7 +5,6 @@
 
 class Player {
 private:
-	const int size = 75;
 	double r, g, b;
 	unsigned int indices[6] = {0};
 	float vertices[12] = {0};
@@ -18,6 +17,7 @@ private:
 	Shader *shader;
 
 public:
+	const int size = 75;
 	float x, y;
 	float angle;
 

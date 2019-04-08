@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <vector>
 #include <ctime>
+#include <iostream>
+#include <stdio.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -64,8 +66,58 @@ void Game::init()
 	}
 }
 
+int Game::check_collision(Bullet bullet, Player player)
+{
+	// origin of bullet is origin of circle
+	// origin of player is top left(?)
+
+	// radius is 10/800
+
+	//trans = glm::translate(trans, glm::vec3(x + dist * cos(angle), y + dist * sin(angle), 1.0));
+
+	float bullet_x = bullet.x + 1.0 + bullet.dist * cos(bullet.angle) - 10/800.0;
+	float bullet_y = bullet.y + 1.0 + bullet.dist * sin(bullet.angle) + 10/800.0;
+
+	float player_x = player.x + 1.0;
+	float player_y = player.y + 1.0;
+
+	//int collision_x = (player.x + player.size/800.0 >= bullet_x) && (bullet_x + 10/800.0 >= player.x);
+	int collision_x = (bullet_x + 10/800.0) >= player_x && player_x + player.size/800.0 >= bullet_x;
+	int collision_y = (bullet_y - 10/800.0) <= player_y && player_y - player.size/800.0 <= bullet_y;
+
+	//int collision_y = (player.y - player.size/800.0 >= bullet_y) && (bullet_y + 10/800.0 >= player.y);
+
+	//printf("player.y: %f\n", player.y);
+	//printf("p_x: %f  p_y: %f  b_x: %f  b_y: %f\n", player.x , player.y , bullet_x, bullet_y);
+	//fflush(stdout);
+
+	return collision_x && collision_y;
+
+
+}
+
+static int hit = 0;
+void Game::physics(float dt)
+{
+	// Collision detection
+	// For each bullet, check if collision
+	for (Bullet &bullet : bullets) {
+		int i = 0;
+		for (Player &player : players) {
+			if (check_collision(bullet, player)) {
+				if (i)
+					std::cout << "hit " << hit++ << std::endl;
+			}
+			++i;
+		}
+	}
+}
+
+
 void Game::update(float dt)
 {
+	physics(dt);
+
 	int i;
 	for (i = 0; i < players.size(); ++i) {
 		players[i].update(dt);

@@ -1,6 +1,9 @@
 #ifndef _GAME_H
 #define _GAME_H
 
+#include "player.hh"
+#include "bullet.hh"
+
 // Represents the current state of the game
 enum GameState {
     GAME_ACTIVE,
@@ -23,6 +26,8 @@ class Game
         void process_input(float dt);
         void update(float dt);
         void render();
+		int check_collision(Bullet bullet, Player player);
+		void physics(float dt);
 };
 
 #endif

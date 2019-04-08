@@ -7,9 +7,6 @@ class Bullet {
 private:
 	double r, g, b;
 	unsigned int indices[6];
-	float x, y;
-	float angle;
-	float dist = 0;
 	float vertices[31 * 6] = {0};
 	int remove;
 
@@ -21,6 +18,10 @@ private:
 
 public:
 	static unsigned int shaderDone;
+
+	float dist = 0;
+	float x, y;
+	float angle;
 
 	Bullet(float a, float b, float c);
 	void move(float x, float y);
