@@ -1,13 +1,14 @@
 #ifndef _ASTEROID_H
 #define _ASTEROID_H
 
+#include "game_object.hh"
 #include "shader.hh"
 
-class Asteroid {
+class Asteroid : public GameObject {
 private:
-	double r, g, b;
-	unsigned int indices[6];
-	float vertices[31 * 6] = {0};
+	const static int num_indices;
+	const static int num_vertices;
+	float size = 50.0f;
 
 	void make_shader();
 	void set_shape();
@@ -18,19 +19,16 @@ private:
 public:
 	static unsigned int shaderDone;
 
-	float dist = 0;
-	float x, y;
-	float angle;
-	float size = 50;
-	int remove;
-
 	Asteroid(float x, float y, float a);
-	void move(float x, float y);
+	//Asteroid(const Asteroid& ast);
+	~Asteroid();
+	void move(float x, float y){}
 	void rotate(float angle);
 	void create_shader();
 	void update(float dt);
 	void render();
 	int should_remove();
+	void do_remove();
 };
 
 #endif

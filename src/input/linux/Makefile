@@ -1,6 +1,6 @@
 CXX := g++ -g -std=c++11
 
-main: main.o dbkbd.o player.o bullet.o asteroid.o glad.o shader.o game.o
+main: main.o dbkbd.o player.o bullet.o asteroid.o glad.o shader.o game.o game_object.hh
 	$(CXX) main.o dbkbd.o player.o bullet.o asteroid.o glad.o shader.o game.o -pthread -lglfw -lGL -lX11 -ldl -o a.out
 
 main.o: main.cc 

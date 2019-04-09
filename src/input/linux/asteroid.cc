@@ -2,6 +2,7 @@
 #include "shader.hh"
 #include <cstdio>
 #include <iostream>
+#include <cstring>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,6 +22,8 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
     "   FragColor = vec4(%ff, %ff, %ff, 1.0f);\n"
     "}\n\0";
 
+const int Asteroid::num_indices = 6;
+const int Asteroid::num_vertices = 31 * num_indices;
 unsigned int Asteroid::shaderDone = 0;
 
 Shader *Asteroid::shader;
@@ -46,10 +49,18 @@ Asteroid::Asteroid(float x, float y, float a)
 	r = 1.0f;
 	g = 0.7f;
 	b = 0.5f;
-	set_shape();
 	angle = 0;
+
 	rotate(a);
+	set_shape();
 	remove = 0;
+}
+
+
+Asteroid::~Asteroid()
+{
+	// Need to figure out how to play nicely with vector
+	// resizing
 }
 
 void Asteroid::rotate(float angle)
@@ -59,7 +70,6 @@ void Asteroid::rotate(float angle)
 
 void Asteroid::update(float dt)
 {
-
 	x += 1.2 * dt * cos(angle);
 	y += 1.2 * dt * sin(angle);
 
@@ -80,8 +90,17 @@ int Asteroid::should_remove()
 	return remove;
 }
 
+void Asteroid::do_remove()
+{
+	remove = 1;
+}
+
 void Asteroid::set_shape()
 {
+
+	indices = new unsigned int[num_indices];
+	vertices = new float[num_vertices];
+
 	int steps = 30;
 	float start_angle = 0.0f;
 	float end_angle = 2 * glm::pi<float>();
@@ -92,7 +111,7 @@ void Asteroid::set_shape()
 
 	int pos = 0;
 
-	for (int i = 0; i <= steps; i++) {
+	for (int i = 0; i <= steps; ++i) {
 		float x_inner = 0;
 		float y_inner = 0;
 
@@ -128,7 +147,7 @@ void Asteroid::create_shader()
 		shaderDone = 1;
 	}
 
-	shader->bind(vertices, 31 * 6, indices, 6);
+	shader->bind(vertices, num_vertices, indices, num_indices);
 }
 
 void Asteroid::render()
@@ -137,6 +156,6 @@ void Asteroid::render()
 	set_transform();
 	glBindVertexArray(shader->VAO);
 	glEnableVertexAttribArray(0);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 31 * 2);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, num_vertices/num_indices*2);
 	glDisableVertexAttribArray(0);
 }

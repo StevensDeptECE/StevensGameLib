@@ -92,8 +92,9 @@ void Game::physics(float dt)
 	for (Bullet &bullet : bullets) {
 		for (Asteroid &asteroid : asteroids) {
 			if (check_collision(bullet, asteroid)) {
-				bullet.remove = 1;
-				asteroid.remove = 1;
+				std::cout << "delete it" << std::endl;
+				bullet.remove=1;
+				asteroid.do_remove();
 			}
 		}
 	}
@@ -125,7 +126,7 @@ void Game::update(float dt)
 		}
 	}
 
-	if (accumulator >= 0.8) {
+	if (accumulator >= 0.5) {
 		create_asteroid();
 		accumulator = 0;
 	}
