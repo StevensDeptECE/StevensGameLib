@@ -2,6 +2,7 @@
 #include "dbkbd.hh"
 #include "player.hh"
 #include "bullet.hh"
+#include "asteroid.hh"
 
 #include <unistd.h>
 #include <vector>
@@ -21,6 +22,7 @@ Inputs *inp;
 /*** Entities ***/
 std::vector<Player> players;
 std::vector<Bullet> bullets;
+std::vector<Asteroid> asteroids;
 
 /*** Control ***/
 bool play = true;
@@ -30,7 +32,8 @@ int bulletId = -1;
 int *space_counter;
 int *prev_space;
 
-void createBullet(int id);
+void create_bullet(int id);
+void create_asteroid();
 
 Game::Game(int width, int height)
 {
@@ -66,34 +69,19 @@ void Game::init()
 	}
 }
 
-int Game::check_collision(Bullet bullet, Player player)
+int Game::check_collision(Bullet bullet, Asteroid asteroid)
 {
-	// origin of bullet is origin of circle
-	// origin of player is top left(?)
-
-	// radius is 10/800
-
-	//trans = glm::translate(trans, glm::vec3(x + dist * cos(angle), y + dist * sin(angle), 1.0));
 
 	float bullet_x = bullet.x + 1.0 + bullet.dist * cos(bullet.angle) - 10/800.0;
 	float bullet_y = bullet.y + 1.0 + bullet.dist * sin(bullet.angle) + 10/800.0;
 
-	float player_x = player.x + 1.0;
-	float player_y = player.y + 1.0;
+	float asteroid_x = asteroid.x + 1.0 - 50/800.0;
+	float asteroid_y = asteroid.y + 1.0 + 50/800.0;
 
-	//int collision_x = (player.x + player.size/800.0 >= bullet_x) && (bullet_x + 10/800.0 >= player.x);
-	int collision_x = (bullet_x + 10/800.0) >= player_x && player_x + player.size/800.0 >= bullet_x;
-	int collision_y = (bullet_y - 10/800.0) <= player_y && player_y - player.size/800.0 <= bullet_y;
-
-	//int collision_y = (player.y - player.size/800.0 >= bullet_y) && (bullet_y + 10/800.0 >= player.y);
-
-	//printf("player.y: %f\n", player.y);
-	//printf("p_x: %f  p_y: %f  b_x: %f  b_y: %f\n", player.x , player.y , bullet_x, bullet_y);
-	//fflush(stdout);
+	int collision_x = (bullet_x + 2*10/800.0) >= asteroid_x && asteroid_x + 2*50/800.0 >= bullet_x;
+	int collision_y = (bullet_y - 2*10/800.0) <= asteroid_y && asteroid_y - 2*50/800.0 <= bullet_y;
 
 	return collision_x && collision_y;
-
-
 }
 
 static int hit = 0;
@@ -102,18 +90,16 @@ void Game::physics(float dt)
 	// Collision detection
 	// For each bullet, check if collision
 	for (Bullet &bullet : bullets) {
-		int i = 0;
-		for (Player &player : players) {
-			if (check_collision(bullet, player)) {
-				if (i)
-					std::cout << "hit " << hit++ << std::endl;
+		for (Asteroid &asteroid : asteroids) {
+			if (check_collision(bullet, asteroid)) {
+				bullet.remove = 1;
+				asteroid.remove = 1;
 			}
-			++i;
 		}
 	}
 }
 
-
+static float accumulator = 0;
 void Game::update(float dt)
 {
 	physics(dt);
@@ -130,6 +116,20 @@ void Game::update(float dt)
 			++i;
 		}
 	}
+	for (i = 0; i < asteroids.size(); ) {
+		asteroids[i].update(dt);
+		if (asteroids[i].should_remove()) {
+			asteroids.erase(asteroids.begin() + i);
+		} else {
+			++i;
+		}
+	}
+
+	if (accumulator >= 0.8) {
+		create_asteroid();
+		accumulator = 0;
+	}
+	accumulator += dt;
 }
 
 void Game::render()
@@ -141,6 +141,10 @@ void Game::render()
 
 	for (int j = 0; j < bullets.size(); ++j) {
 		bullets[j].render();
+	}
+
+	for (int j = 0; j < asteroids.size(); ++j) {
+		asteroids[j].render();
 	}
 }
 
@@ -167,7 +171,7 @@ void Game::process_input(float dt)
 		// space
 		if (i->get_key(j, 57)) {
 			if (!prev_space[j] || space_counter[j] == 05) {
-				createBullet(j);
+				create_bullet(j);
 				space_counter[j] = 0;
 			}
 			prev_space[j] = 1;
@@ -179,7 +183,7 @@ void Game::process_input(float dt)
 	}
 }
 
-void createBullet(int id)
+void create_bullet(int id)
 {
 	// Upwards is 0 rad, but in reality it's pi/2 rad
 	// r = size / 2 / screenwidth
@@ -189,4 +193,15 @@ void createBullet(int id)
 	float y = sin(players[id].angle+PI/2.0) * r + (players[id].y - r);
 	bullets.push_back(Bullet(x, y, players[id].angle));
 	bullets[bullets.size() - 1].create_shader();
+}
+
+void create_asteroid()
+{
+	float x = (float)rand() / RAND_MAX;
+	float y = (float)rand() / RAND_MAX;
+	float angle = (float)rand() / RAND_MAX * PI;
+	if (asteroids.size() < 10) {
+		asteroids.push_back(Asteroid(x, y, angle));
+		asteroids[asteroids.size() - 1].create_shader();
+	}
 }

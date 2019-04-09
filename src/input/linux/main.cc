@@ -50,8 +50,8 @@ Game game(800, 800);
 		dt = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		game.update(dt);
 		game.process_input(dt);
+		game.update(dt);
 
 		game.render();
 

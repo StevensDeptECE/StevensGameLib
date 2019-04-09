@@ -1,9 +1,9 @@
-#ifndef _BULLET_H
-#define _BULLET_H
+#ifndef _ASTEROID_H
+#define _ASTEROID_H
 
 #include "shader.hh"
 
-class Bullet {
+class Asteroid {
 private:
 	double r, g, b;
 	unsigned int indices[6];
@@ -21,9 +21,10 @@ public:
 	float dist = 0;
 	float x, y;
 	float angle;
+	float size = 50;
 	int remove;
 
-	Bullet(float a, float b, float c);
+	Asteroid(float x, float y, float a);
 	void move(float x, float y);
 	void rotate(float angle);
 	void create_shader();

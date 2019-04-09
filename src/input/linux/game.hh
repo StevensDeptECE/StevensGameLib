@@ -3,6 +3,7 @@
 
 #include "player.hh"
 #include "bullet.hh"
+#include "asteroid.hh"
 
 // Represents the current state of the game
 enum GameState {
@@ -26,7 +27,7 @@ class Game
         void process_input(float dt);
         void update(float dt);
         void render();
-		int check_collision(Bullet bullet, Player player);
+		int check_collision(Bullet bullet, Asteroid asteroid);
 		void physics(float dt);
 };
 
