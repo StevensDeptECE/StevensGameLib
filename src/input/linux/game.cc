@@ -71,30 +71,49 @@ void Game::init()
 	}
 }
 
-int Game::check_collision(Bullet bullet, Asteroid asteroid)
+int Game::check_collision(Asteroid obj_a, Bullet obj_b)
 {
-	float bullet_x = bullet.x + 1.0 - bullet.size/Game::Width;
-	float bullet_y = bullet.y + 1.0 + bullet.size/Game::Height;
+	float obj_a_x = obj_a.x + 1.0 - obj_a.size/Game::Width;
+	float obj_a_y = obj_a.y + 1.0 + obj_a.size/Game::Height;
 
-	float asteroid_x = asteroid.x + 1.0 - asteroid.size/Game::Width;
-	float asteroid_y = asteroid.y + 1.0 + asteroid.size/Game::Height;
+	float obj_b_x = obj_b.x + 1.0 - obj_b.size/Game::Width;
+	float obj_b_y = obj_b.y + 1.0 + obj_b.size/Game::Height;
 
-	int collision_x = (bullet_x + 2*bullet.size/Game::Width) >= asteroid_x && asteroid_x + 2*asteroid.size/Game::Width >= bullet_x;
-	int collision_y = (bullet_y - 2*bullet.size/Game::Height) <= asteroid_y && asteroid_y - 2*asteroid.size/Game::Height <= bullet_y;
+	int collision_x = (obj_a_x + 2*obj_a.size/Game::Width) >= obj_b_x && obj_b_x + 2*obj_b.size/Game::Width >= obj_a_x;
+	int collision_y = (obj_a_y - 2*obj_a.size/Game::Height) <= obj_b_y && obj_b_y - 2*obj_b.size/Game::Height <= obj_a_y;
 
 	return collision_x && collision_y;
 }
 
+int Game::check_collision(Asteroid obj_a, Player obj_b)
+{
+	float obj_a_x = obj_a.x + 1.0 - obj_a.size/Game::Width;
+	float obj_a_y = obj_a.y + 1.0 + obj_a.size/Game::Height;
+
+	float obj_b_x = obj_b.x + 1.0 - obj_b.size/Game::Width;
+	float obj_b_y = obj_b.y + 1.0 + obj_b.size/Game::Height;
+
+	int collision_x = (obj_a_x + 2*obj_a.size/Game::Width) >= obj_b_x && obj_b_x + 2*obj_b.size/Game::Width >= obj_a_x;
+	int collision_y = (obj_a_y - 2*obj_a.size/Game::Height) <= obj_b_y && obj_b_y - 2*obj_b.size/Game::Height <= obj_a_y;
+
+	return collision_x && collision_y;
+}
 static int hit = 0;
 void Game::physics(float dt)
 {
 	// Collision detection
 	// For each bullet, check if collision
-	for (Bullet &bullet : bullets) {
-		for (Asteroid &asteroid : asteroids) {
-			if (check_collision(bullet, asteroid)) {
+	for (Asteroid &asteroid : asteroids) {
+		for (Bullet &bullet : bullets) {
+			if (check_collision(asteroid, bullet)) {
 				bullet.do_remove();
 				asteroid.do_remove();
+			}
+		}
+		for (Player &player : players) {
+			if (check_collision(asteroid, player)) {
+					std::cout << "hit!" << std::endl;
+					asteroid.do_remove();
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 #ifndef _GAME_H
 #define _GAME_H
 
+#include "game_object.hh"
 #include "player.hh"
 #include "bullet.hh"
 #include "asteroid.hh"
@@ -27,7 +28,8 @@ class Game
         void process_input(float dt);
         void update(float dt);
         void render();
-		int check_collision(Bullet bullet, Asteroid asteroid);
+		int check_collision(Asteroid obj_a, Bullet obj_b);
+		int check_collision(Asteroid obj_a, Player obj_b);
 		void physics(float dt);
 };
 
