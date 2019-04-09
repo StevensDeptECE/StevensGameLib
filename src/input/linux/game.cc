@@ -110,11 +110,13 @@ void Game::physics(float dt)
 				asteroid.do_remove();
 			}
 		}
+		int i = 0;
 		for (Player &player : players) {
 			if (check_collision(asteroid, player)) {
-					std::cout << "hit!" << std::endl;
+					std::cout << "player " << i << " hit!" << std::endl;
 					asteroid.do_remove();
 			}
+			++i;
 		}
 	}
 }

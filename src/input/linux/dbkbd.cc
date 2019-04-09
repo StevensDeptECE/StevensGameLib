@@ -69,7 +69,6 @@ void Inputs::getDevices()
 
 void Inputs::process_chars(int id, unsigned short scan_code, bool down)
 {
-	// TODO: Figure out of 'bool down' is necessary
 	if (down)
 		keys[id].keys[scan_code>>5] |= 1<<(scan_code&0x1F);
 	else

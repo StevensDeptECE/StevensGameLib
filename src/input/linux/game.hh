@@ -16,21 +16,17 @@ enum GameState {
 class Game
 {
     public:
-        // Game state
         GameState  State;	
         static int Width, Height;
-        // Constructor/Destructor
         Game(int width, int height);
         ~Game();
-        // Initialize game state (load all shaders/textures/levels)
         void init();
-        // GameLoop
         void process_input(float dt);
         void update(float dt);
         void render();
-		int check_collision(Asteroid obj_a, Bullet obj_b);
-		int check_collision(Asteroid obj_a, Player obj_b);
-		void physics(float dt);
+	int check_collision(Asteroid obj_a, Bullet obj_b);
+	int check_collision(Asteroid obj_a, Player obj_b);
+	void physics(float dt);
 };
 
 #endif
