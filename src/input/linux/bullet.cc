@@ -1,3 +1,4 @@
+#include "game.hh"
 #include "bullet.hh"
 #include "shader.hh"
 #include <cstdio>
@@ -12,7 +13,7 @@ const static char *vertexShaderTemp = "#version 330 core\n"
     "uniform mat4 transform;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 800.0);\n"
     "}\0";
 const static char *fragmentShaderTemp = "#version 330 core\n"
     "out vec4 FragColor;\n"
@@ -21,7 +22,10 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
     "   FragColor = vec4(%ff, %ff, %ff, 1.0f);\n"
     "}\n\0";
 
+const int Bullet::num_indices = 6;
+const int Bullet::num_vertices = 31 * num_indices;
 unsigned int Bullet::shaderDone = 0;
+const float Bullet::size = 10.0f;
 
 Shader *Bullet::shader;
 
@@ -38,24 +42,18 @@ void Bullet::make_shader()
 	std::cout << "made shader for bullet" << std::endl;
 }
 
-
-Bullet::Bullet(float x, float y, float c)
+Bullet::Bullet(float x, float y, float a)
 {
 	this->x = x;
 	this->y = y;
 	r = 1.0f;
 	g = 1.0f;
 	b = 0.0f;
-	set_shape();
 	angle = 0.0f;
-	rotate(c);
-	remove = 0;
-}
 
-void Bullet::move(float x, float y)
-{
-	this->x += x;
-	this->y += y;
+	rotate(a);
+	set_shape();
+	remove = 0;
 }
 
 void Bullet::rotate(float angle)
@@ -65,31 +63,29 @@ void Bullet::rotate(float angle)
 
 void Bullet::update(float dt)
 {
-	dist += 1.0 * dt;	
-	
-	// Check boundaries
-	remove = (x+dist*cos(angle) < -1 || x+dist*cos(angle) > 1
-			|| y+dist*sin(angle) < -1 || y+dist*sin(angle) > 1);
-}
+	x += 1.2 * dt * cos(angle);
+	y += 1.2 * dt * sin(angle);
 
-int Bullet::should_remove()
-{
-	return remove;
+	if (glm::abs(x) > 1 || glm::abs(y) > 1)
+		remove = true;
 }
 
 void Bullet::set_shape()
 {
+	indices = new unsigned int[num_indices];
+	vertices = new float[num_vertices];
+
 	int steps = 30;
 	float start_angle = 0.0f;
 	float end_angle = 2 * glm::pi<float>();
 
 	float t = start_angle;
 
-	float radius_outer = 10.0f / 800.0;
+	float radius_outer = size;
 
 	int pos = 0;
 
-	for (int i = 0; i <= steps; i++) {
+	for (int i = 0; i <= steps; ++i) {
 		float x_inner = 0;
 		float y_inner = 0;
 
@@ -111,7 +107,8 @@ void Bullet::set_shape()
 void Bullet::set_transform()
 {
 	glm::mat4 trans = glm::mat4(1.0f);
-	trans = glm::translate(trans, glm::vec3(x + dist * cos(angle), y + dist * sin(angle), 1.0));
+	trans = glm::translate(trans, glm::vec3(x, y, 1.0));
+	trans = glm::rotate(trans, angle, glm::vec3(0.0, 0.0, 1.0));
 
 	unsigned int transformLoc = glGetUniformLocation(shader->id, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
@@ -124,7 +121,7 @@ void Bullet::create_shader()
 		shaderDone = 1;
 	}
 
-	shader->bind(vertices, 31 * 6, indices, 6);
+	shader->bind(vertices, num_vertices, indices, num_indices);
 }
 
 void Bullet::render()
@@ -133,6 +130,6 @@ void Bullet::render()
 	set_transform();
 	glBindVertexArray(shader->VAO);
 	glEnableVertexAttribArray(0);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 31 * 2);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, num_vertices/num_indices*2);
 	glDisableVertexAttribArray(0);
 }

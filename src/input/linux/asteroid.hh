@@ -8,7 +8,6 @@ class Asteroid : public GameObject {
 private:
 	const static int num_indices;
 	const static int num_vertices;
-	float size = 50.0f;
 
 	void make_shader();
 	void set_shape();
@@ -19,16 +18,18 @@ private:
 public:
 	static unsigned int shaderDone;
 
+	const static float size;
+
 	Asteroid(float x, float y, float a);
-	//Asteroid(const Asteroid& ast);
-	~Asteroid();
-	void move(float x, float y){}
+//	Asteroid(const Asteroid& ast);
+//	~Asteroid();
+	void move(float x, float y) {}
 	void rotate(float angle);
 	void create_shader();
 	void update(float dt);
 	void render();
-	int should_remove();
-	void do_remove();
+	int should_remove() { return remove; }
+	void do_remove() { remove = 1; }
 };
 
 #endif

@@ -1,3 +1,4 @@
+#include "game.hh"
 #include "player.hh"
 #include "shader.hh"
 #include <cstdio>
@@ -21,6 +22,9 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
     "   FragColor = vec4(%ff, %ff, %ff, 1.0f);\n"
     "}\n\0";
 
+const int Player::num_indices = 6;
+const int Player::num_vertices = 12;
+const float Player::size = 75.0f;
 
 void Player::make_shader()
 {
@@ -38,29 +42,31 @@ void Player::make_shader()
 Player::Player(float a, float b)
 {
 	// Value between 0.4 and 1.0
-	r = (double)((rand()%(10-4+1) + 4) / 10.0);
-	g = (double)((rand()%(10-4+1) + 4) / 10.0);
-	b = (double)((rand()%(10-4+1) + 4) / 10.0);
+	r = (float)((rand()%(10-4+1) + 4) / 10.0);
+	g = (float)((rand()%(10-4+1) + 4) / 10.0);
+	b = (float)((rand()%(10-4+1) + 4) / 10.0);
 
+	// Center player
+	x = 0 - size / Game::Width / 2;
+	y = 0 + size / Game::Height / 2;
 
-	std::cout << r << " " << g << " " << b << std::endl;
-	x = 0 - size / 800.0 / 2;
-	y = 0 + size / 800.0 / 2;
-	angle = 0;
+	angle = 0.0f;
 	set_shape();
+
+	// Move player back
 	x = a;
 	y = b;
 }
 
-void Player::move(float x, float y, float dt)
+void Player::move(float x, float y)
 {
-	this->x += x * dt;
-	this->y += y * dt;
+	this->x += x;
+	this->y += y;
 }
 
-void Player::rotate(float angle, float dt)
+void Player::rotate(float angle)
 {
-	this->angle += angle * dt;
+	this->angle += angle;
 }
 
 void Player::update(float dt)
@@ -68,7 +74,6 @@ void Player::update(float dt)
 	// Check boundaries
 	float cx = x+size/2.0/800.0;
 	float cy = y-size/2.0/800.0;
-	//std::cout << "cx: " << cx << "  cy: " << cy << std::endl;
 	if (cx < -1)
 		x = 1-size/2.0/800.0;
 	if (cx > 1)
@@ -77,11 +82,13 @@ void Player::update(float dt)
 		y = 1;
 	if (cy > 1)
 		y = -1+size/2.0/800.0;
-	//trans = glm::translate(trans, glm::vec3(x+size/800.0/2, y-size/800.0/2, 1.0));
 }
 
 void Player::set_shape()
 {
+	indices = new unsigned int[num_indices];
+	vertices = new float[num_vertices];
+
 	if (this->x < -1)
 		this->x = -1;
 	if (this->x > 1-size/800.0)
@@ -109,13 +116,12 @@ void Player::set_shape()
 	indices[3] = 0;
 	indices[4] = 2;
 	indices[5] = 3;
-
 }
 
 void Player::set_transform()
 {
 	glm::mat4 trans = glm::mat4(1.0f);
-	trans = glm::translate(trans, glm::vec3(x+size/800.0/2, y-size/800.0/2, 1.0));
+	trans = glm::translate(trans, glm::vec3(x+size/Game::Width/2.0, y-size/Game::Height/2.0, 1.0));
 	trans = glm::rotate(trans, angle, glm::vec3(0.0, 0.0, 1.0));
 
 	unsigned int transformLoc = glGetUniformLocation(shader->id, "transform");
@@ -125,7 +131,7 @@ void Player::set_transform()
 void Player::create_shader()
 {
 	make_shader();
-	shader->bind(vertices, 12, indices, 6);
+	shader->bind(vertices, num_vertices, indices, num_indices);
 }
 
 void Player::render()

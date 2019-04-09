@@ -1,14 +1,13 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
+#include "game_object.hh"
 #include "shader.hh"
 
-class Player {
+class Player : public GameObject {
 private:
-	double r, g, b;
-	unsigned int indices[6] = {0};
-	float vertices[12] = {0};
-	int length = 12;
+	const static int num_indices;
+	const static int num_vertices;
 
 	void make_shader();
 	void set_shape();
@@ -17,16 +16,18 @@ private:
 	Shader *shader;
 
 public:
-	const int size = 75;
-	float x, y;
-	float angle;
+	const static float size;
 
 	Player(float a, float b);
-	void move(float x, float y, float dt);
-	void rotate(float angle, float dt);
+//	Player(const Player& player);
+//	~Player();	
+	void move(float x, float y);
+	void rotate(float angle);
 	void create_shader();
-	void render();
 	void update(float dt);
+	void render();
+	int should_remove() { return remove; }
+	void do_remove() { remove = 1; }
 };
 
 #endif

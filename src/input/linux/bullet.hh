@@ -1,13 +1,13 @@
 #ifndef _BULLET_H
 #define _BULLET_H
 
+#include "game_object.hh"
 #include "shader.hh"
 
-class Bullet {
+class Bullet : public GameObject {
 private:
-	double r, g, b;
-	unsigned int indices[6];
-	float vertices[31 * 6] = {0};
+	const static int num_indices;
+	const static int num_vertices;
 
 	void make_shader();
 	void set_shape();
@@ -18,18 +18,18 @@ private:
 public:
 	static unsigned int shaderDone;
 
-	float dist = 0;
-	float x, y;
-	float angle;
-	int remove;
+	const static float size;
 
-	Bullet(float a, float b, float c);
-	void move(float x, float y);
+	Bullet(float x, float y, float a);
+//	Bullet(const Bullet& bul);
+//	~Bullet();
+	void move(float x, float y) {}
 	void rotate(float angle);
 	void create_shader();
 	void update(float dt);
 	void render();
-	int should_remove();
+	int should_remove() { return remove; }
+	void do_remove() { remove = 1; }
 };
 
 #endif

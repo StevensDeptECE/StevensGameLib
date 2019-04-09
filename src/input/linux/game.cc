@@ -8,7 +8,6 @@
 #include <vector>
 #include <ctime>
 #include <iostream>
-#include <stdio.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -16,6 +15,9 @@
 #include <GLFW/glfw3.h>
 
 const float PI = glm::pi<float>();
+
+int Game::Width = 0;
+int Game::Height = 0;
 
 Inputs *inp;
 
@@ -25,8 +27,6 @@ std::vector<Bullet> bullets;
 std::vector<Asteroid> asteroids;
 
 /*** Control ***/
-bool play = true;
-int bulletId = -1;
 // Put this stuff in a struct
 // or something useful
 int *space_counter;
@@ -45,6 +45,8 @@ Game::Game(int width, int height)
 
 Game::~Game()
 {
+	std::cout << "Goodbye\n" << std::endl;
+	delete inp;
 }
 
 void Game::init()
@@ -71,15 +73,14 @@ void Game::init()
 
 int Game::check_collision(Bullet bullet, Asteroid asteroid)
 {
+	float bullet_x = bullet.x + 1.0 - bullet.size/Game::Width;
+	float bullet_y = bullet.y + 1.0 + bullet.size/Game::Height;
 
-	float bullet_x = bullet.x + 1.0 + bullet.dist * cos(bullet.angle) - 10/800.0;
-	float bullet_y = bullet.y + 1.0 + bullet.dist * sin(bullet.angle) + 10/800.0;
+	float asteroid_x = asteroid.x + 1.0 - asteroid.size/Game::Width;
+	float asteroid_y = asteroid.y + 1.0 + asteroid.size/Game::Height;
 
-	float asteroid_x = asteroid.x + 1.0 - 50/800.0;
-	float asteroid_y = asteroid.y + 1.0 + 50/800.0;
-
-	int collision_x = (bullet_x + 2*10/800.0) >= asteroid_x && asteroid_x + 2*50/800.0 >= bullet_x;
-	int collision_y = (bullet_y - 2*10/800.0) <= asteroid_y && asteroid_y - 2*50/800.0 <= bullet_y;
+	int collision_x = (bullet_x + 2*bullet.size/Game::Width) >= asteroid_x && asteroid_x + 2*asteroid.size/Game::Width >= bullet_x;
+	int collision_y = (bullet_y - 2*bullet.size/Game::Height) <= asteroid_y && asteroid_y - 2*asteroid.size/Game::Height <= bullet_y;
 
 	return collision_x && collision_y;
 }
@@ -92,8 +93,7 @@ void Game::physics(float dt)
 	for (Bullet &bullet : bullets) {
 		for (Asteroid &asteroid : asteroids) {
 			if (check_collision(bullet, asteroid)) {
-				std::cout << "delete it" << std::endl;
-				bullet.remove=1;
+				bullet.do_remove();
 				asteroid.do_remove();
 			}
 		}
@@ -126,7 +126,7 @@ void Game::update(float dt)
 		}
 	}
 
-	if (accumulator >= 0.5) {
+	if (accumulator >= 0.3) {
 		create_asteroid();
 		accumulator = 0;
 	}
@@ -155,19 +155,19 @@ void Game::process_input(float dt)
 	for (int j = 0; j < i->keyboard_count(); ++j) {
 		// translation
 		if (i->get_key(j, 17))
-			players[j].move(0, .5, dt);
+			players[j].move(0, .5 * dt);
 		if (i->get_key(j, 30))
-			players[j].move(-.5, 0, dt);
+			players[j].move(-.5 * dt, 0);
 		if (i->get_key(j, 32))
-			players[j].move(.5, 0, dt);
+			players[j].move(.5 * dt, 0);
 		if (i->get_key(j, 31))
-			players[j].move(0, -.5, dt);
+			players[j].move(0, -.5 * dt);
 
 		// rotation
 		if (i->get_key(j, 105))
-			players[j].rotate(3, dt);
+			players[j].rotate(3 * dt);
 		if (i->get_key(j, 106))
-			players[j].rotate(-3, dt);
+			players[j].rotate(-3 * dt);
 
 		// space
 		if (i->get_key(j, 57)) {
@@ -187,9 +187,9 @@ void Game::process_input(float dt)
 void create_bullet(int id)
 {
 	// Upwards is 0 rad, but in reality it's pi/2 rad
-	// r = size / 2 / screenwidth
+	// r = Player::size / 2 / screenwidth
 	// offset = center of player
-	float r = 75.0 / 2.0 / 800.0;
+	float r = 75.0 / 2.0 / Game::Width;
 	float x = cos(players[id].angle+PI/2.0) * r + (players[id].x + r);
 	float y = sin(players[id].angle+PI/2.0) * r + (players[id].y - r);
 	bullets.push_back(Bullet(x, y, players[id].angle));
@@ -198,10 +198,10 @@ void create_bullet(int id)
 
 void create_asteroid()
 {
-	float x = (float)rand() / RAND_MAX;
-	float y = (float)rand() / RAND_MAX;
+	float x = (float)rand() / RAND_MAX * 2 - 1;
+	float y = (float)rand() / RAND_MAX * 2 - 1;
 	float angle = (float)rand() / RAND_MAX * PI;
-	if (asteroids.size() < 10) {
+	if (asteroids.size() < 25) {
 		asteroids.push_back(Asteroid(x, y, angle));
 		asteroids[asteroids.size() - 1].create_shader();
 	}

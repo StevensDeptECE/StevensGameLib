@@ -17,7 +17,7 @@ class Game
     public:
         // Game state
         GameState  State;	
-        int	   Width, Height;
+        static int Width, Height;
         // Constructor/Destructor
         Game(int width, int height);
         ~Game();

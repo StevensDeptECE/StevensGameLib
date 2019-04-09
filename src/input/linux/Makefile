@@ -6,7 +6,7 @@ main: main.o dbkbd.o player.o bullet.o asteroid.o glad.o shader.o game.o game_ob
 main.o: main.cc 
 	$(CXX) -c -I./includes/glad/include main.cc -o main.o 	
 
-asteroid.o: asteroid.cc asteroid.hh
+asteroid.o: asteroid.cc asteroid.hh game_object.hh
 	$(CXX) -c -I./includes/glad/include -I./includes/glm asteroid.cc -o asteroid.o
 
 player.o: player.cc player.hh

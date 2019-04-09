@@ -1,5 +1,6 @@
 #include "asteroid.hh"
 #include "shader.hh"
+#include "game.hh"
 #include <cstdio>
 #include <iostream>
 #include <cstring>
@@ -13,7 +14,7 @@ const static char *vertexShaderTemp = "#version 330 core\n"
     "uniform mat4 transform;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 800.0);\n"
     "}\0";
 const static char *fragmentShaderTemp = "#version 330 core\n"
     "out vec4 FragColor;\n"
@@ -25,6 +26,7 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
 const int Asteroid::num_indices = 6;
 const int Asteroid::num_vertices = 31 * num_indices;
 unsigned int Asteroid::shaderDone = 0;
+const float Asteroid::size = 50.0f;
 
 Shader *Asteroid::shader;
 
@@ -41,7 +43,6 @@ void Asteroid::make_shader()
 	std::cout << "made shader for asteroid" << std::endl;
 }
 
-
 Asteroid::Asteroid(float x, float y, float a)
 {
 	this->x = x;
@@ -49,18 +50,11 @@ Asteroid::Asteroid(float x, float y, float a)
 	r = 1.0f;
 	g = 0.7f;
 	b = 0.5f;
-	angle = 0;
+	angle = 0.0f;
 
 	rotate(a);
 	set_shape();
 	remove = 0;
-}
-
-
-Asteroid::~Asteroid()
-{
-	// Need to figure out how to play nicely with vector
-	// resizing
 }
 
 void Asteroid::rotate(float angle)
@@ -73,31 +67,22 @@ void Asteroid::update(float dt)
 	x += 1.2 * dt * cos(angle);
 	y += 1.2 * dt * sin(angle);
 
-	float cx = x+size/2.0/800.0;
-	float cy = y-size/2.0/800.0;
+	// These are scaled on CPU to make it easier
+	// to do math
+	float cx = x+size/2.0/Game::Width;
+	float cy = y-size/2.0/Game::Height;
 	if (cx < -1)
-		x = 1-size/2.0/800.0;
+		x = 1-size/2.0/Game::Width;
 	if (cx > 1)
 		x = -1;
 	if (cy < -1)
 		y = 1;
 	if (cy > 1)
-		y = -1+size/2.0/800.0;
-}
-
-int Asteroid::should_remove()
-{
-	return remove;
-}
-
-void Asteroid::do_remove()
-{
-	remove = 1;
+		y = -1+size/2.0/Game::Height;
 }
 
 void Asteroid::set_shape()
 {
-
 	indices = new unsigned int[num_indices];
 	vertices = new float[num_vertices];
 
@@ -107,7 +92,7 @@ void Asteroid::set_shape()
 
 	float t = start_angle;
 
-	float radius_outer = size / 800.0;
+	float radius_outer = size;
 
 	int pos = 0;
 
