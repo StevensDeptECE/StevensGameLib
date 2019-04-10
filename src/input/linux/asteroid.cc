@@ -44,7 +44,7 @@ void Asteroid::make_shader()
 
 Asteroid::Asteroid(float x, float y, float a)
 {
-	size = 50.0f;
+	size = 30.0f;
 	this->x = x;
 	this->y = y;
 	r = 1.0f;
