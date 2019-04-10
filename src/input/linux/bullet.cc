@@ -25,7 +25,6 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
 const int Bullet::num_indices = 6;
 const int Bullet::num_vertices = 31 * num_indices;
 unsigned int Bullet::shaderDone = 0;
-const float Bullet::size = 10.0f;
 
 Shader *Bullet::shader;
 
@@ -44,6 +43,7 @@ void Bullet::make_shader()
 
 Bullet::Bullet(float x, float y, float a)
 {
+	size = 10.0f;
 	this->x = x;
 	this->y = y;
 	r = 1.0f;

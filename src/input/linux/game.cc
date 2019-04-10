@@ -71,21 +71,7 @@ void Game::init()
 	}
 }
 
-int Game::check_collision(Asteroid obj_a, Bullet obj_b)
-{
-	float obj_a_x = obj_a.x + 1.0 - obj_a.size/Game::Width;
-	float obj_a_y = obj_a.y + 1.0 + obj_a.size/Game::Height;
-
-	float obj_b_x = obj_b.x + 1.0 - obj_b.size/Game::Width;
-	float obj_b_y = obj_b.y + 1.0 + obj_b.size/Game::Height;
-
-	int collision_x = (obj_a_x + 2*obj_a.size/Game::Width) >= obj_b_x && obj_b_x + 2*obj_b.size/Game::Width >= obj_a_x;
-	int collision_y = (obj_a_y - 2*obj_a.size/Game::Height) <= obj_b_y && obj_b_y - 2*obj_b.size/Game::Height <= obj_a_y;
-
-	return collision_x && collision_y;
-}
-
-int Game::check_collision(Asteroid obj_a, Player obj_b)
+int Game::check_collision(GameObject &obj_a, GameObject &obj_b)
 {
 	float obj_a_x = obj_a.x + 1.0 - obj_a.size/Game::Width;
 	float obj_a_y = obj_a.y + 1.0 + obj_a.size/Game::Height;

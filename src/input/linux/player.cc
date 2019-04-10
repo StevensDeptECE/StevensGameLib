@@ -24,7 +24,6 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
 
 const int Player::num_indices = 6;
 const int Player::num_vertices = 12;
-const float Player::size = 75.0f;
 
 void Player::make_shader()
 {
@@ -41,6 +40,8 @@ void Player::make_shader()
 
 Player::Player(float a, float b)
 {
+	size = 75.0f;
+
 	// Value between 0.4 and 1.0
 	r = (float)((rand()%(10-4+1) + 4) / 10.0);
 	g = (float)((rand()%(10-4+1) + 4) / 10.0);

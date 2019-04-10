@@ -16,7 +16,6 @@ private:
 	Shader *shader;
 
 public:
-	const static float size;
 
 	Player(float a, float b);
 //	Player(const Player& player);

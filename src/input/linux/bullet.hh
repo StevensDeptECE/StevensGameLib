@@ -18,8 +18,6 @@ private:
 public:
 	static unsigned int shaderDone;
 
-	const static float size;
-
 	Bullet(float x, float y, float a);
 //	Bullet(const Bullet& bul);
 //	~Bullet();

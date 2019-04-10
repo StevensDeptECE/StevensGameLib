@@ -18,8 +18,6 @@ private:
 public:
 	static unsigned int shaderDone;
 
-	const static float size;
-
 	Asteroid(float x, float y, float a);
 //	Asteroid(const Asteroid& ast);
 //	~Asteroid();

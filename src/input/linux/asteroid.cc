@@ -26,7 +26,6 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
 const int Asteroid::num_indices = 6;
 const int Asteroid::num_vertices = 31 * num_indices;
 unsigned int Asteroid::shaderDone = 0;
-const float Asteroid::size = 50.0f;
 
 Shader *Asteroid::shader;
 
@@ -45,6 +44,7 @@ void Asteroid::make_shader()
 
 Asteroid::Asteroid(float x, float y, float a)
 {
+	size = 50.0f;
 	this->x = x;
 	this->y = y;
 	r = 1.0f;
