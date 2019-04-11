@@ -1,10 +1,12 @@
-#ifndef _GAME_H
-#define _GAME_H
+#pragma once
 
 #include "game_object.hh"
 #include "player.hh"
 #include "bullet.hh"
 #include "asteroid.hh"
+#include "dbkbd.hh"
+
+#include <vector>
 
 // Represents the current state of the game
 enum GameState {
@@ -13,19 +15,36 @@ enum GameState {
 	GAME_WIN
 };
 
-class Game
-{
-	public:
-		GameState  State;	
-		static int Width, Height;
-		Game(int width, int height);
-		~Game();
-		void init();
-		void process_input(float dt);
-		void update(float dt);
-		void render();
-		int check_collision(GameObject &obj_a, GameObject &obj_b);
-		void physics(float dt);
+class Game {
+private:
+	Inputs *inp;
+
+	float accumulator; // count time to create_asteroid()
+	float asteroid_creation_time;
+	/*** Entities ***/
+	std::vector<Player> players;
+	std::vector<Bullet> bullets;
+	std::vector<Asteroid> asteroids;
+
+	/*** Control ***/
+	// Put this stuff in a struct
+	// or something useful
+	int *space_counter; // how many spaces typed
+	int *prev_space; // 
+
+	void create_bullet(int id);
+	void create_asteroid();
+
+public:
+	GameState  State;	
+	static int Width, Height;
+	Game(int width, int height, float ast = 0.3f);
+	~Game();
+	void init();
+	void process_input(float dt);
+	void update(float dt);
+	void render() const;
+	bool check_collision(const GameObject &a, const GameObject &b) const;
+	void physics(float dt);
 };
 
-#endif

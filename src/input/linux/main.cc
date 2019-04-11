@@ -15,7 +15,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 int main(int argc, char **argv)
 {
-Game game(800, 800);
+	Game game(800, 800, 0.3);
 	std::srand(time(NULL));
 
 	// GLFW Init

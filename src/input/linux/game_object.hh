@@ -21,7 +21,7 @@ public:
 
 	virtual void create_shader() = 0;
 	virtual void update(float dt) = 0;
-	virtual void render() = 0;
+	virtual void render() const = 0;
 	virtual int should_remove() = 0;
 	virtual void do_remove() = 0;
 

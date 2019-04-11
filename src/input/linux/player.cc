@@ -83,6 +83,8 @@ void Player::update(float dt)
 		y = 1;
 	if (cy > 1)
 		y = -1+size/2.0/800.0;
+
+	set_transform();
 }
 
 void Player::set_shape()
@@ -135,10 +137,9 @@ void Player::create_shader()
 	shader->bind(vertices, num_vertices, indices, num_indices);
 }
 
-void Player::render()
+void Player::render() const
 {
 	shader->use();
-	set_transform();
 	glBindVertexArray(shader->VAO);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shader->EBO);

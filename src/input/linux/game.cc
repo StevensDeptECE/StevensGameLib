@@ -19,27 +19,11 @@ const float PI = glm::pi<float>();
 int Game::Width = 0;
 int Game::Height = 0;
 
-Inputs *inp;
-
-/*** Entities ***/
-std::vector<Player> players;
-std::vector<Bullet> bullets;
-std::vector<Asteroid> asteroids;
-
-/*** Control ***/
-// Put this stuff in a struct
-// or something useful
-int *space_counter;
-int *prev_space;
-
-void create_bullet(int id);
-void create_asteroid();
-
-Game::Game(int width, int height)
+Game::Game(int width, int height, float act) : accumulator(0), asteroid_creation_time(act)
 {
-	State = GAME_ACTIVE;
-	Width = width;
 	Height = height;
+	Width = width;
+	State = GAME_ACTIVE;
 	inp = new Inputs;
 }
 
@@ -71,20 +55,20 @@ void Game::init()
 	}
 }
 
-int Game::check_collision(GameObject &obj_a, GameObject &obj_b)
+bool Game::check_collision(const GameObject &a, const GameObject &b) const
 {
-	float obj_a_x = obj_a.x + 1.0 - obj_a.size/Game::Width;
-	float obj_a_y = obj_a.y + 1.0 + obj_a.size/Game::Height;
+	float a_x = a.x + 1.0 - a.size/Width;
+	float a_y = a.y + 1.0 + a.size/Height;
 
-	float obj_b_x = obj_b.x + 1.0 - obj_b.size/Game::Width;
-	float obj_b_y = obj_b.y + 1.0 + obj_b.size/Game::Height;
+	float b_x = b.x + 1.0 - b.size/Width;
+	float b_y = b.y + 1.0 + b.size/Height;
 
-	int collision_x = (obj_a_x + 2*obj_a.size/Game::Width) >= obj_b_x && obj_b_x + 2*obj_b.size/Game::Width >= obj_a_x;
-	int collision_y = (obj_a_y - 2*obj_a.size/Game::Height) <= obj_b_y && obj_b_y - 2*obj_b.size/Game::Height <= obj_a_y;
+	int collision_x = (a_x + 2*a.size/Width) >= b_x && b_x + 2*b.size/Width >= a_x;
+	int collision_y = (a_y - 2*a.size/Height) <= b_y && b_y - 2*b.size/Height <= a_y;
 
 	return collision_x && collision_y;
 }
-static int hit = 0;
+
 void Game::physics(float dt)
 {
 	// Collision detection
@@ -96,18 +80,17 @@ void Game::physics(float dt)
 				asteroid.do_remove();
 			}
 		}
-		int i = 0;
+//		int i = 0;
 		for (Player &player : players) {
 			if (check_collision(asteroid, player)) {
-					std::cout << "player " << i << " hit!" << std::endl;
+					//std::cout << "player " << i << " hit!" << std::endl;
 					asteroid.do_remove();
 			}
-			++i;
+			//++i;
 		}
 	}
 }
 
-static float accumulator = 0;
 void Game::update(float dt)
 {
 	physics(dt);
@@ -133,14 +116,14 @@ void Game::update(float dt)
 		}
 	}
 
-	if (accumulator >= 0.3) {
+	if (accumulator <= 0) {
 		create_asteroid();
-		accumulator = 0;
+		accumulator = asteroid_creation_time;
 	}
-	accumulator += dt;
+	accumulator -= dt;
 }
 
-void Game::render()
+void Game::render() const
 {
 	// Draw square per player
 	for (int j = 0; j < players.size(); ++j) {
@@ -191,7 +174,7 @@ void Game::process_input(float dt)
 	}
 }
 
-void create_bullet(int id)
+void Game::create_bullet(int id)
 {
 	// Upwards is 0 rad, but in reality it's pi/2 rad
 	// r = Player::size / 2 / screenwidth
@@ -203,7 +186,7 @@ void create_bullet(int id)
 	bullets[bullets.size() - 1].create_shader();
 }
 
-void create_asteroid()
+void Game::create_asteroid()
 {
 	float x = (float)rand() / RAND_MAX * 2 - 1;
 	float y = (float)rand() / RAND_MAX * 2 - 1;

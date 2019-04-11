@@ -68,6 +68,8 @@ void Bullet::update(float dt)
 
 	if (glm::abs(x) > 1 || glm::abs(y) > 1)
 		remove = true;
+
+	set_transform();
 }
 
 void Bullet::set_shape()
@@ -124,10 +126,9 @@ void Bullet::create_shader()
 	shader->bind(vertices, num_vertices, indices, num_indices);
 }
 
-void Bullet::render()
+void Bullet::render() const
 {
 	shader->use();
-	set_transform();
 	glBindVertexArray(shader->VAO);
 	glEnableVertexAttribArray(0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, num_vertices/num_indices*2);

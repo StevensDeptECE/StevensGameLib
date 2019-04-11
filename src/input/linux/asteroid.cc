@@ -79,6 +79,8 @@ void Asteroid::update(float dt)
 		y = 1;
 	if (cy > 1)
 		y = -1+size/2.0/Game::Height;
+
+	set_transform();
 }
 
 void Asteroid::set_shape()
@@ -135,10 +137,9 @@ void Asteroid::create_shader()
 	shader->bind(vertices, num_vertices, indices, num_indices);
 }
 
-void Asteroid::render()
+void Asteroid::render() const
 {
 	shader->use();
-	set_transform();
 	glBindVertexArray(shader->VAO);
 	glEnableVertexAttribArray(0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, num_vertices/num_indices*2);

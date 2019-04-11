@@ -1,5 +1,4 @@
-#ifndef _PLAYER_H
-#define _PLAYER_H
+#pragma once
 
 #include "game_object.hh"
 #include "shader.hh"
@@ -24,9 +23,8 @@ public:
 	void rotate(float angle);
 	void create_shader();
 	void update(float dt);
-	void render();
+	void render() const;
 	int should_remove() { return remove; }
 	void do_remove() { remove = 1; }
 };
 
-#endif
