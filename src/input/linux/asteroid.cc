@@ -119,6 +119,7 @@ void Asteroid::set_shape()
 
 void Asteroid::set_transform()
 {
+	shader->use();
 	glm::mat4 trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, glm::vec3(x, y, 1.0));
 	trans = glm::rotate(trans, angle, glm::vec3(0.0, 0.0, 1.0));

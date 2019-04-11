@@ -31,6 +31,8 @@ Game::~Game()
 {
 	std::cout << "Goodbye\n" << std::endl;
 	delete inp;
+	delete[] space_counter;
+	delete[] prev_space;
 }
 
 void Game::init()
@@ -123,18 +125,21 @@ void Game::update(float dt)
 	accumulator -= dt;
 }
 
-void Game::render() const
+void Game::render()
 {
 	// Draw square per player
 	for (int j = 0; j < players.size(); ++j) {
+		players[j].set_transform();
 		players[j].render();
 	}
 
 	for (int j = 0; j < bullets.size(); ++j) {
+		bullets[j].set_transform();
 		bullets[j].render();
 	}
 
 	for (int j = 0; j < asteroids.size(); ++j) {
+		asteroids[j].set_transform();
 		asteroids[j].render();
 	}
 }

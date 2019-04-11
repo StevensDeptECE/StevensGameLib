@@ -43,7 +43,7 @@ public:
 	void init();
 	void process_input(float dt);
 	void update(float dt);
-	void render() const;
+	void render();
 	bool check_collision(const GameObject &a, const GameObject &b) const;
 	void physics(float dt);
 };

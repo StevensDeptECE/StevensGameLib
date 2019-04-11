@@ -11,7 +11,6 @@ private:
 
 	void make_shader();
 	void set_shape();
-	void set_transform();
 
 	static Shader *shader;
 
@@ -26,6 +25,7 @@ public:
 	void create_shader();
 	void update(float dt);
 	void render() const;
+	void set_transform();
 	int should_remove() { return remove; }
 	void do_remove() { remove = 1; }
 };

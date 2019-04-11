@@ -10,7 +10,6 @@ private:
 
 	void make_shader();
 	void set_shape();
-	void set_transform();
 
 	Shader *shader;
 
@@ -21,6 +20,7 @@ public:
 //	~Player();	
 	void move(float x, float y);
 	void rotate(float angle);
+	void set_transform();
 	void create_shader();
 	void update(float dt);
 	void render() const;

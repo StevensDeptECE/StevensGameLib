@@ -123,6 +123,7 @@ void Player::set_shape()
 
 void Player::set_transform()
 {
+	shader->use();
 	glm::mat4 trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, glm::vec3(x+size/Game::Width/2.0, y-size/Game::Height/2.0, 1.0));
 	trans = glm::rotate(trans, angle, glm::vec3(0.0, 0.0, 1.0));
