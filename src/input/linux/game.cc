@@ -185,8 +185,8 @@ void Game::create_bullet(int id)
 	// r = Player::size / 2 / screenwidth
 	// offset = center of player
 	float r = 75.0 / 2.0 / Game::Width;
-	float x = cos(players[id].angle+PI/2.0) * r + (players[id].x + r);
-	float y = sin(players[id].angle+PI/2.0) * r + (players[id].y - r);
+	float x = cos(players[id].angle+PI/2.0) * r + (players[id].x);// + r);
+	float y = sin(players[id].angle+PI/2.0) * r + (players[id].y);// - r);
 	bullets.push_back(Bullet(x, y, players[id].angle));
 	bullets[bullets.size() - 1].create_shader();
 }
