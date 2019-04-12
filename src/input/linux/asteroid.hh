@@ -1,5 +1,4 @@
-#ifndef _ASTEROID_H
-#define _ASTEROID_H
+#pragma once
 
 #include "game_object.hh"
 #include "shader.hh"
@@ -12,12 +11,12 @@ private:
 	void make_shader();
 	void set_shape();
 
-	static Shader *shader;
+	Shader *shader;
 
 public:
 	static unsigned int shaderDone;
 
-	Asteroid(float x, float y, float a);
+	Asteroid(float x, float y, float a, float s);
 //	Asteroid(const Asteroid& ast);
 //	~Asteroid();
 	void move(float x, float y) {}
@@ -30,4 +29,3 @@ public:
 	void do_remove() { remove = 1; }
 };
 
-#endif

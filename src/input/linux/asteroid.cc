@@ -25,9 +25,6 @@ const static char *fragmentShaderTemp = "#version 330 core\n"
 
 const int Asteroid::num_indices = 6;
 const int Asteroid::num_vertices = 31 * num_indices;
-unsigned int Asteroid::shaderDone = 0;
-
-Shader *Asteroid::shader;
 
 void Asteroid::make_shader()
 {
@@ -39,12 +36,12 @@ void Asteroid::make_shader()
 	sprintf(fragmentShaderSource, fragmentShaderTemp, r, g, b);
 
 	shader = new Shader(vertexShaderSource, fragmentShaderSource);
-	std::cout << "made shader for asteroid" << std::endl;
+//	std::cout << "made shader for asteroid" << std::endl;
 }
 
-Asteroid::Asteroid(float x, float y, float a)
+Asteroid::Asteroid(float x, float y, float a, float s)
 {
-	size = 30.0f;
+	this->size = s;
 	this->x = x;
 	this->y = y;
 	r = 1.0f;
@@ -130,10 +127,11 @@ void Asteroid::set_transform()
 
 void Asteroid::create_shader()
 {
-	if (!shaderDone) {
-		make_shader();
-		shaderDone = 1;
-	}
+//	if (!shaderDone) {
+//		make_shader();
+//		shaderDone = 1;
+//	}
+	make_shader();
 
 	shader->bind(vertices, num_vertices, indices, num_indices);
 }

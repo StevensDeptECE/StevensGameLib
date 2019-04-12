@@ -196,8 +196,9 @@ void Game::create_asteroid()
 	float x = (float)rand() / RAND_MAX * 2 - 1;
 	float y = (float)rand() / RAND_MAX * 2 - 1;
 	float angle = (float)rand() / RAND_MAX * PI;
+	float size = (float)(rand() % 30) + 30.0;
 	if (asteroids.size() < 10) {
-		asteroids.push_back(Asteroid(x, y, angle));
+		asteroids.push_back(Asteroid(x, y, angle, size));
 		asteroids[asteroids.size() - 1].create_shader();
 	}
 }
