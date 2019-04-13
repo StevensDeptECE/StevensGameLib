@@ -150,19 +150,19 @@ void Game::process_input(float dt)
 	for (int j = 0; j < i->keyboard_count(); ++j) {
 		// translation
 		if (i->get_key(j, 17))
-			players[j].move(0, .5 * dt);
+			players[j].move(0, .7 * dt);
 		if (i->get_key(j, 30))
-			players[j].move(-.5 * dt, 0);
+			players[j].move(-.7 * dt, 0);
 		if (i->get_key(j, 32))
-			players[j].move(.5 * dt, 0);
+			players[j].move(.7 * dt, 0);
 		if (i->get_key(j, 31))
-			players[j].move(0, -.5 * dt);
+			players[j].move(0, -.7 * dt);
 
 		// rotation
 		if (i->get_key(j, 105))
-			players[j].rotate(3 * dt);
+			players[j].rotate(5 * dt);
 		if (i->get_key(j, 106))
-			players[j].rotate(-3 * dt);
+			players[j].rotate(-5 * dt);
 
 		// space
 		if (i->get_key(j, 57)) {
@@ -193,9 +193,9 @@ void Game::create_bullet(int id)
 
 void Game::create_asteroid()
 {
-	float x = (float)rand() / RAND_MAX * 2 - 1;
-	float y = (float)rand() / RAND_MAX * 2 - 1;
-	float angle = (float)rand() / RAND_MAX * PI;
+	float x = (float)rand() / RAND_MAX + 1;
+	float y = (float)rand() / RAND_MAX;
+	float angle = (float)rand() / RAND_MAX * PI * 2;
 	float size = (float)(rand() % 30) + 30.0;
 	if (asteroids.size() < 10) {
 		asteroids.push_back(Asteroid(x, y, angle, size));
