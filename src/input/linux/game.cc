@@ -188,6 +188,10 @@ void Game::create_bullet(int id)
 	float y = sin(players[id].angle+PI/2.0) * r + (players[id].y);// - r);
 	bullets.push_back(Bullet(x, y, players[id].angle));
 	bullets[bullets.size() - 1].create_shader();
+	bullets.push_back(Bullet(x, y, players[id].angle-PI/6.0));
+	bullets[bullets.size() - 1].create_shader();
+	bullets.push_back(Bullet(x, y, players[id].angle+PI/6.0));
+	bullets[bullets.size() - 1].create_shader();
 }
 
 void Game::create_asteroid()
