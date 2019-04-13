@@ -19,7 +19,7 @@ const float PI = glm::pi<float>();
 int Game::Width = 0;
 int Game::Height = 0;
 
-Game::Game(int width, int height, float act) : accumulator(0), asteroid_creation_time(act)
+Game::Game(int width, int height, float act) : accumulator(0), asteroid_creation_time(act), score(0), deaths(0)
 {
 	Height = height;
 	Width = width;
@@ -80,15 +80,14 @@ void Game::physics(float dt)
 			if (check_collision(asteroid, bullet)) {
 				bullet.do_remove();
 				asteroid.do_remove();
+				std::cout << "Score: " << ++score << "\n";
 			}
 		}
-//		int i = 0;
 		for (Player &player : players) {
 			if (check_collision(asteroid, player)) {
-					//std::cout << "player " << i << " hit!" << std::endl;
+					std::cout << "Hit " << ++deaths << " times\n";
 					asteroid.do_remove();
 			}
-			//++i;
 		}
 	}
 }

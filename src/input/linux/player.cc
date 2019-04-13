@@ -46,6 +46,7 @@ Player::Player(float a, float b)
 	r = (float)((rand()%(10-4+1) + 4) / 10.0);
 	g = (float)((rand()%(10-4+1) + 4) / 10.0);
 	b = (float)((rand()%(10-4+1) + 4) / 10.0);
+	b = 0;
 
 	// Center player
 	x = 0;

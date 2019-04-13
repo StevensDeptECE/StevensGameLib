@@ -32,6 +32,9 @@ private:
 	int *space_counter; // how many spaces typed
 	int *prev_space; // 
 
+	int score;
+	int deaths;
+
 	void create_bullet(int id);
 	void create_asteroid();
 
