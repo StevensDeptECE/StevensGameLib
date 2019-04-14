@@ -186,12 +186,17 @@ void Game::create_bullet(int id)
 	float r = 75.0 / 2.0 / Game::Width;
 	float x = cos(players[id].angle+PI/2.0) * r + (players[id].x);// + r);
 	float y = sin(players[id].angle+PI/2.0) * r + (players[id].y);// - r);
-	bullets.push_back(Bullet(x, y, players[id].angle));
-	bullets[bullets.size() - 1].create_shader();
-	bullets.push_back(Bullet(x, y, players[id].angle-PI/6.0));
-	bullets[bullets.size() - 1].create_shader();
-	bullets.push_back(Bullet(x, y, players[id].angle+PI/6.0));
-	bullets[bullets.size() - 1].create_shader();
+//	bullets.push_back(Bullet(x, y, players[id].angle));
+//	bullets[bullets.size() - 1].create_shader();
+//	bullets.push_back(Bullet(x, y, players[id].angle-PI/6.0));
+//	bullets[bullets.size() - 1].create_shader();
+//	bullets.push_back(Bullet(x, y, players[id].angle+PI/6.0));
+//	bullets[bullets.size() - 1].create_shader();
+	int num_bullets = 75;
+	for (int i = 0; i < num_bullets; ++i) {
+		bullets.push_back(Bullet(x, y, players[id].angle+((float)i/num_bullets)*PI*2));
+		bullets[bullets.size() - 1].create_shader();
+	}
 }
 
 void Game::create_asteroid()
