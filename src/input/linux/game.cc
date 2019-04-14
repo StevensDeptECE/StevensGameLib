@@ -33,6 +33,8 @@ Game::~Game()
 	delete inp;
 	delete[] space_counter;
 	delete[] prev_space;
+	delete[] type;
+	delete[] num_bullets;
 }
 
 void Game::init()
@@ -44,11 +46,15 @@ void Game::init()
 	// Control arrays
 	space_counter = new int[num_players];
 	prev_space = new int[num_players];
+	type = new int[num_players];
+	num_bullets = new int[num_players];
 
 	for (int j = 0; j < num_players; ++j) {
 		players.push_back(Player((double)rand() / RAND_MAX - .1, (double)rand() / RAND_MAX - .1));
 		space_counter[j] = 0;
 		prev_space[j] = 0;
+		type[j] = 0;
+		num_bullets[j] = 1;
 	}
 
 	// Player shaders, VAOs, VBOs, EBOs, etc.
@@ -163,6 +169,28 @@ void Game::process_input(float dt)
 		if (i->get_key(j, 106))
 			players[j].rotate(-5 * dt);
 
+		// weapons
+		if (i->get_key(j, 2)) {
+			num_bullets[j] = 1;
+			type[j] = 0;
+		}
+		if (i->get_key(j, 3)) {
+			num_bullets[j] = 75;
+			type[j] = 0;
+		}
+		if (i->get_key(j, 4)) {
+			num_bullets[j] = 1;
+			type[j] = 1;
+		}
+		if (i->get_key(j, 5)) {
+			num_bullets[j] = 3;
+			type[j] = 2;
+		}
+		if (i->get_key(j, 6)) {
+			num_bullets[j] = 4;
+			type[j] = 3;
+		}
+
 		// space
 		if (i->get_key(j, 57)) {
 			if (!prev_space[j] || space_counter[j] == 05) {
@@ -186,17 +214,41 @@ void Game::create_bullet(int id)
 	float r = 75.0 / 2.0 / Game::Width;
 	float x = cos(players[id].angle+PI/2.0) * r + (players[id].x);// + r);
 	float y = sin(players[id].angle+PI/2.0) * r + (players[id].y);// - r);
-//	bullets.push_back(Bullet(x, y, players[id].angle));
-//	bullets[bullets.size() - 1].create_shader();
-//	bullets.push_back(Bullet(x, y, players[id].angle-PI/6.0));
-//	bullets[bullets.size() - 1].create_shader();
-//	bullets.push_back(Bullet(x, y, players[id].angle+PI/6.0));
-//	bullets[bullets.size() - 1].create_shader();
-	int num_bullets = 75;
-	for (int i = 0; i < num_bullets; ++i) {
-		bullets.push_back(Bullet(x, y, players[id].angle+((float)i/num_bullets)*PI*2));
+
+	switch (type[id]) {
+	case 0:
+		// single
+		for (int i = 0; i < num_bullets[id]; ++i) {
+			bullets.push_back(Bullet(x, y, players[id].angle+((float)i/num_bullets[id])*PI*2));
+			bullets[bullets.size() - 1].create_shader();
+		}
+		break;
+
+	case 1:
+		// array
+		bullets.push_back(Bullet(x, y, players[id].angle));
 		bullets[bullets.size() - 1].create_shader();
+		bullets.push_back(Bullet(x+0.07*cos(players[id].angle), y+0.07*sin(players[id].angle), players[id].angle));
+		bullets[bullets.size() - 1].create_shader();
+		bullets.push_back(Bullet(x-0.07*cos(players[id].angle), y-0.07*sin(players[id].angle), players[id].angle));
+		bullets[bullets.size() - 1].create_shader();
+		break;
+	case 2:
+		// spray
+		bullets.push_back(Bullet(x, y, players[id].angle+(PI/6.0)));
+		bullets[bullets.size() - 1].create_shader();
+		bullets.push_back(Bullet(x, y, players[id].angle));
+		bullets[bullets.size() - 1].create_shader();
+		bullets.push_back(Bullet(x, y, players[id].angle-(PI/6.0)));
+		bullets[bullets.size() - 1].create_shader();
+		break;
+	case 3:
+		// mega
+		bullets.push_back(Bullet(x, y, players[id].angle, 50));
+		bullets[bullets.size() - 1].create_shader();
+		break;
 	}
+
 }
 
 void Game::create_asteroid()

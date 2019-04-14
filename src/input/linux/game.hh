@@ -31,6 +31,8 @@ private:
 	// or something useful
 	int *space_counter; // how many spaces typed
 	int *prev_space; // 
+	int *type;
+	int *num_bullets;
 
 	int score;
 	int deaths;

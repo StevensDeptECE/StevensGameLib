@@ -99,8 +99,10 @@ void Asteroid::set_shape()
 		float x_inner = 0;
 		float y_inner = 0;
 
-		float x_outer = radius_outer * cos(t) + 0;
-		float y_outer = radius_outer * sin(t) + 0;
+		float a = 1.0;
+		float b = (float)Game::Width/(float)Game::Height;
+		float x_outer = a * radius_outer * cos(t) + 0;
+		float y_outer = b * radius_outer * sin(t) + 0;
 
 		vertices[pos++] = x_inner;
 		vertices[pos++] = y_inner;
@@ -119,7 +121,6 @@ void Asteroid::set_transform()
 	shader->use();
 	glm::mat4 trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, glm::vec3(x, y, 1.0));
-	trans = glm::rotate(trans, angle, glm::vec3(0.0, 0.0, 1.0));
 
 	unsigned int transformLoc = glGetUniformLocation(shader->id, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
