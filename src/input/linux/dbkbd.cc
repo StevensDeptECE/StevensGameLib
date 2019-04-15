@@ -89,6 +89,7 @@ void* Inputs::poll(void *)
 			// EV_MAKE = pressed
 			if (event.value == EV_MAKE) {
 				process_chars(offset, event.code, true); 
+				std::cout << event.code << std::endl;
 			}
 
 			// EV_BREAK = released

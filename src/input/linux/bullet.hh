@@ -13,10 +13,12 @@ private:
 
 	static Shader *shader;
 
+	float size;
+
 public:
 	static unsigned int shaderDone;
 
-	Bullet(float x, float y, float a);
+	Bullet(float x, float y, float a, float size = 10.0f);
 //	Bullet(const Bullet& bul);
 //	~Bullet();
 	void move(float x, float y) {}
