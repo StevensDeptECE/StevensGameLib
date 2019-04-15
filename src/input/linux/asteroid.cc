@@ -91,7 +91,7 @@ void Asteroid::set_shape()
 
 	float t = start_angle;
 
-	float radius_outer = size;
+	float radius_outer = size * Game::Height/Game::Width;
 
 	int pos = 0;
 

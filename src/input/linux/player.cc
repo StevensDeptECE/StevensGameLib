@@ -63,7 +63,7 @@ Player::Player(float a, float b)
 void Player::move(float x, float y)
 {
 	this->x += x;
-	this->y += y;
+	this->y += y * Game::Width / Game::Height;
 }
 
 void Player::rotate(float angle)
@@ -92,16 +92,16 @@ void Player::set_shape()
 	vertices = new float[num_vertices];
 
 	vertices[0] = x;
-	vertices[1] = y + size / 800.0;
+	vertices[1] = y + (float)size / Game::Height / 2;
 	vertices[2] = 0.0f;
-	vertices[3] = x - size / 800.0;
-	vertices[4] = y - size / 800.0;
+	vertices[3] = x - (float)size / Game::Width;
+	vertices[4] = y - (float)size / Game::Height /2 ;
 	vertices[5] = 0.0f;
 	vertices[6] = x;
-	vertices[7] = y - size / 800.0 / 2;
+	vertices[7] = y - (float)size / Game::Height / 2 / 2;
 	vertices[8] = 0.0f;
-	vertices[9] = x + size / 800.0;
-	vertices[10] = y - size / 800.0;
+	vertices[9] = x + (float)size / Game::Width;
+	vertices[10] = y - (float)size / Game::Height / 2;
 	vertices[11] = 0.0f;
 
 	indices[0] = 0;
@@ -117,8 +117,9 @@ void Player::set_transform()
 	shader->use();
 	glm::mat4 trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, glm::vec3(x, y, 1.0));
-	//trans = glm::translate(trans, glm::vec3(x-size/Game::Width/2.0, y+size/Game::Width/2.0, 1.0));
+	trans = glm::scale(trans, glm::vec3(1.0, (float)Game::Width/Game::Height, 1.0));
 	trans = glm::rotate(trans, angle, glm::vec3(0.0, 0.0, 1.0));
+
 
 	unsigned int transformLoc = glGetUniformLocation(shader->id, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
