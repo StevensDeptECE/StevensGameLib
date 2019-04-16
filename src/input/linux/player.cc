@@ -92,16 +92,16 @@ void Player::set_shape()
 	vertices = new float[num_vertices];
 
 	vertices[0] = x;
-	vertices[1] = y + (float)size / Game::Height / 2;
+	vertices[1] = y + (float)size / Game::Height / ((float)Game::Width/Game::Height);
 	vertices[2] = 0.0f;
 	vertices[3] = x - (float)size / Game::Width;
-	vertices[4] = y - (float)size / Game::Height /2 ;
+	vertices[4] = y - (float)size / Game::Height / ((float)Game::Width/Game::Height);
 	vertices[5] = 0.0f;
 	vertices[6] = x;
-	vertices[7] = y - (float)size / Game::Height / 2 / 2;
+	vertices[7] = y - (float)size / Game::Height / 2 / ((float)Game::Width/Game::Height);
 	vertices[8] = 0.0f;
 	vertices[9] = x + (float)size / Game::Width;
-	vertices[10] = y - (float)size / Game::Height / 2;
+	vertices[10] = y - (float)size / Game::Height / ((float)Game::Width/Game::Height);
 	vertices[11] = 0.0f;
 
 	indices[0] = 0;
