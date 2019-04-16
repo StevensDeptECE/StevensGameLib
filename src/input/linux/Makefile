@@ -30,4 +30,4 @@ game.o: game.cc game.hh
 	$(CXX) -c  game.cc -o game.o
 
 clean:
-	rm -f *.o *.out
+	rm -f *.o *.out main

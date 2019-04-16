@@ -13,8 +13,6 @@ private:
 
 	static Shader *shader;
 
-	float size;
-
 public:
 	static unsigned int shaderDone;
 

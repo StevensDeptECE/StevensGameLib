@@ -228,9 +228,9 @@ void Game::create_bullet(int id)
 		// array
 		bullets.push_back(Bullet(x, y, players[id].angle));
 		bullets[bullets.size() - 1].create_shader();
-		bullets.push_back(Bullet(x+0.07*cos(players[id].angle), y+0.07*sin(players[id].angle), players[id].angle));
+		bullets.push_back(Bullet(x+0.07*Game::Height/Game::Width*cos(players[id].angle), y+0.07*sin(players[id].angle), players[id].angle));
 		bullets[bullets.size() - 1].create_shader();
-		bullets.push_back(Bullet(x-0.07*cos(players[id].angle), y-0.07*sin(players[id].angle), players[id].angle));
+		bullets.push_back(Bullet(x-0.07*Game::Height/Game::Width*cos(players[id].angle), y-0.07*sin(players[id].angle), players[id].angle));
 		bullets[bullets.size() - 1].create_shader();
 		break;
 	case 2:
@@ -256,8 +256,8 @@ void Game::create_asteroid()
 	float x = (float)rand() / RAND_MAX + 1;
 	float y = (float)rand() / RAND_MAX;
 	float angle = (float)rand() / RAND_MAX * PI * 2;
-	float size = (float)(rand() % 30) + 30.0;
-	if (asteroids.size() < 10) {
+	float size = (float)(rand() % 25) + 35.0;
+	if (asteroids.size() < 15) {
 		asteroids.push_back(Asteroid(x, y, angle, size));
 		asteroids[asteroids.size() - 1].create_shader();
 	}
