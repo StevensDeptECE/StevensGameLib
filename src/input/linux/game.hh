@@ -15,6 +15,15 @@ enum GameState {
 	GAME_WIN
 };
 
+enum InputTypes {
+	QUIT = 0,
+	NEWGAME = 1,
+	NUCLEAR_OPTION = 3,
+	SELF_DESTRUCT = 2
+};
+
+
+
 class Game {
 private:
 	Inputs *inp;

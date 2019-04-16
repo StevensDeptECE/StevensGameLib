@@ -9,8 +9,11 @@
 #include <vector>
 #include <iostream>
 
+
 class Inputs {
 private:
+	typedef void (*Action)();
+	Action actions[2048] = {0};
 	const static char *command;
 	struct Keyboard;
 	struct VKey_Array;
@@ -23,6 +26,8 @@ private:
 	static void process_callbacks();
 
 	static void (*handlers[2048])();	// callbacks
+	static constexpr int MAXEVENT = 1 << 11;
+	static int eventMap[MAXEVENT];
 public:
 	Inputs();
 	bool get_key(int id, unsigned int code);

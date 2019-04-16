@@ -25,6 +25,12 @@ std::vector<Inputs::Keyboard> Inputs::keyboards;
 std::vector<Inputs::VKey_Array> Inputs::keys;
 void (*Inputs::handlers[2048])() = {0};	// callbacks
 
+/*
+   eventMap will map universal number to place in handlers arr 
+ */
+constexpr int MAXEVENT = 1 << 11;
+int eventMap[MAXEVENT] = {0};
+
 struct Inputs::VKey_Array
 {
 	uint32_t keys[8] = {0};	// 256 keys / 32 bits/key
@@ -133,16 +139,9 @@ void* Inputs::poll(void *)
 	}
 }
 
-
-void hello()
-{
-	std::cout << "callback for 3\n";
-}
-
 Inputs::Inputs()
 {
 	get_devices();
-	set_callback_handler(&hello, 3);
 	// Polling thread
 	pthread_t myThread;
 	pthread_create(&myThread, NULL, &poll, NULL);
