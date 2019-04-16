@@ -24,8 +24,8 @@ int main(int argc, char **argv)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow *window = glfwCreateWindow(Game::Width, Game::Height, "Asteroids Demo - OpenGL", NULL, NULL);
-	if (window == NULL) {
+	GLFWwindow *window = glfwCreateWindow(Game::Width, Game::Height, "Asteroids Demo - OpenGL", glfwGetPrimaryMonitor(), NULL);
+	if (window == nullptr) {
 		std::cout << "Failed to create window" << std::endl;
 		glfwTerminate();
 		return -1;
