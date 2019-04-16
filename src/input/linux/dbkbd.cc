@@ -23,11 +23,31 @@ using namespace std;
 
 std::vector<Inputs::Keyboard> Inputs::keyboards;
 std::vector<Inputs::VKey_Array> Inputs::keys;
+void (*Inputs::handlers[2048])() = {0};	// callbacks
 
 struct Inputs::VKey_Array
 {
 	uint32_t keys[8] = {0};	// 256 keys / 32 bits/key
 	VKey_Array() {}
+};
+
+struct Inputs::Key
+{
+	// key<8> + ctrl<1> + shift<1> + alt<1>
+	uint32_t keys[2048] = {0};
+
+	Key() {}
+
+	void set(int pos, bool ctrl, bool shift, bool alt)
+	{
+		keys[(pos<<10) | (alt<<2) | (shift<<1) | ctrl] = 1;
+	}
+
+	// What do we clear???
+	bool get(int pos, bool ctrl, bool shift, bool alt)
+	{
+		return keys[(pos<<10) | (alt<<2) | (shift<<1) | ctrl];
+	}
 };
 
 struct Inputs::Keyboard
@@ -46,8 +66,13 @@ struct Inputs::Keyboard
 	}
 };
 
+void Inputs::set_callback_handler(void (*f)(), unsigned int code)
+{
+	handlers[code] = f;
+}
 
-void Inputs::getDevices()
+
+void Inputs::get_devices()
 {
 	FILE *grep_devices_p = popen(command, "r");
 	char keyboardNameBuf[16];
@@ -69,10 +94,17 @@ void Inputs::getDevices()
 
 void Inputs::process_chars(int id, unsigned short scan_code, bool down)
 {
-	if (down)
+	if (down) {
 		keys[id].keys[scan_code>>5] |= 1<<(scan_code&0x1F);
-	else
+		if (handlers[scan_code] != NULL)
+			(*handlers[scan_code])();
+		else
+			printf("handler[%d] is: %p\n", handlers[scan_code]);
+	}
+	else {
 		keys[id].keys[scan_code>>5] &= ~(1<<(scan_code&0x1F));
+	}
+
 }
 
 // Main polling loop that calls process_chars()
@@ -89,7 +121,6 @@ void* Inputs::poll(void *)
 			// EV_MAKE = pressed
 			if (event.value == EV_MAKE) {
 				process_chars(offset, event.code, true); 
-				std::cout << event.code << std::endl;
 			}
 
 			// EV_BREAK = released
@@ -103,9 +134,15 @@ void* Inputs::poll(void *)
 }
 
 
+void hello()
+{
+	std::cout << "callback for 3\n";
+}
+
 Inputs::Inputs()
 {
-	getDevices();
+	get_devices();
+	set_callback_handler(&hello, 3);
 	// Polling thread
 	pthread_t myThread;
 	pthread_create(&myThread, NULL, &poll, NULL);
