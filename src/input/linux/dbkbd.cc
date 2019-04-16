@@ -96,10 +96,10 @@ void Inputs::process_chars(int id, unsigned short scan_code, bool down)
 {
 	if (down) {
 		keys[id].keys[scan_code>>5] |= 1<<(scan_code&0x1F);
-		if (handlers[scan_code] != NULL)
+		if (handlers[scan_code] != nullptr)
 			(*handlers[scan_code])();
-		else
-			printf("handler[%d] is: %p\n", handlers[scan_code]);
+
+		printf("handler[%d] is: %p\n", scan_code, handlers[scan_code]);
 	}
 	else {
 		keys[id].keys[scan_code>>5] &= ~(1<<(scan_code&0x1F));
